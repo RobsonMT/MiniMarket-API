@@ -29,7 +29,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/ElBulidur/kenzieAcademy/capstoneMiniMarket/minimarket_api/MiniMarket-API/venv"
+set -gx VIRTUAL_ENV "/home/robson/Desktop/repos/MiniMarket-API/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
