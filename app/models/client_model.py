@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Boolean, ForeignKey, Integer, String, DateTime
 from datetime import date 
 from dataclasses import dataclass
-
+from sqlalchemy.orm import relationship, backref
 @dataclass
 class ClientModel:
     
@@ -25,4 +25,12 @@ class ClientModel:
     is_dobtor = Column(Boolean, nullable=True)
     is_late = Column(Boolean, nullable=True)
     is_activate = Column(Boolean, nullable=True)
-    estabilishment_id = Column(Integer,ForeignKey("establishments.id"))
+    estabilishment_id = Column(Integer, ForeignKey("establishments.id"))
+
+    sales = relationship(
+        "SaleModel",
+        backref=backref("clients", uselist=True),
+        uselist=False
+    )
+
+

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from app.configs.database import db
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import validates
 
  
@@ -14,5 +14,5 @@ class SaleProductModel(db.Model):
     __tablename__ = 'sales_products'
 
     id = Column(Integer, primary_key=True)
-    sale_id = Column(Integer, ForeignKey=("sales.id"))
-    product_id = Column(Integer, ForeignKey=("products.id"))
+    sale_id = Column(Integer, ForeignKey("sales.id"))
+    product_id = Column(Integer, ForeignKey("products.id"))
