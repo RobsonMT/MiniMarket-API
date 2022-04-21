@@ -1,4 +1,2 @@
-
-
-def create_one_product():
-    return "ROTA create PRODUCT"
+import json
+from app.services.query_product_services import get_product_by_id
