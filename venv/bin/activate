@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/ElBulidur/kenzieAcademy/capstoneMiniMarket/minimarket_api/MiniMarket-API/venv"
+VIRTUAL_ENV="/home/robson/Desktop/repos/MiniMarket-API/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

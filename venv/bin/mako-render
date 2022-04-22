@@ -1,4 +1,4 @@
-#!/Users/ElBulidur/kenzieAcademy/capstoneMiniMarket/minimarket_api/MiniMarket-API/venv/bin/python3
+#!/home/robson/Desktop/repos/MiniMarket-API/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
