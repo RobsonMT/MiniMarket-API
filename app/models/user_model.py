@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from datetime import datetime as dt
 from app.configs.database import db
+from sqlalchemy.orm import relationship,backref
 @dataclass
 class UserModel(db.Model):
     
@@ -23,6 +24,13 @@ class UserModel(db.Model):
     contact = Column(String(100))
     password = Column(String(100))
     avatar = Column(String)
-    created = Column(DateTime)
-    last_access = Column(DateTime)
-    is_activate = Column(Boolean)
+    created = Column(DateTime, default=dt.now())
+    last_access = Column(DateTime,  default=dt.now())
+    is_activate = Column(Boolean, default=True)
+
+    establishment = relationship(
+        "EstablishmentModel",
+        backref=backref("establishment",
+        uselist=False), 
+        uselist=False
+    )

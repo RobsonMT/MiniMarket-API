@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from app.configs.database import db
 from datetime import datetime as dt
 from sqlalchemy import Column, Integer, String, DateTime, Numeric
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, backref, validates
 
 
 @dataclass
@@ -15,5 +15,10 @@ class PaymentModel(db.Model):
  
     id = Column(Integer, primary_key=True) 
     form_of_payment = Column(String(100))
+    
+    sales = relationship(
+        "SaleModel",
+        backref=backref("sales", uselist=True)
+    )
 
  

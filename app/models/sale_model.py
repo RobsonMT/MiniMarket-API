@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from enum import unique
 from sqlalchemy import Column, ForeignKey, Integer, DateTime, Numeric
+from sqlalchemy.orm import relationship, backref
 from app.configs.database import db
 from datetime import datetime as dt
-
 @dataclass
 class SaleModel(db.Model):
     
@@ -24,3 +24,9 @@ class SaleModel(db.Model):
     payment_id = Column(Integer, ForeignKey("payments.id"), unique=True)
     sale_total = Column(Numeric(asdecimal=True))
     remain_to_pay = Column(Numeric(asdecimal=True))
+
+    products = relationship(
+        "ProductModel",
+        secondary="sales_products",
+        backref=backref("products", uselist=True)
+        )

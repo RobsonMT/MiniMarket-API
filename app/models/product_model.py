@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from app.configs.database import db
 from datetime import datetime as dt
-from sqlalchemy import Column, Integer, String, DateTime, Numeric
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
 from sqlalchemy.orm import validates
 
 
@@ -27,7 +27,7 @@ class ProductModel(db.Model):
     cost_price = Column(Numeric(asdecimal=True))
     unit_type = Column(String(100))
     url_img = Column(String)
-    category_id = Column(Integer, ForeignKey=("categories.id"))
-    establieshment_id = Column(Integer,ForeignKey=("establishments.id"))
+    category_id = Column(Integer, ForeignKey("categories.id"))
+    establieshment_id = Column(Integer,ForeignKey("establishments.id"))
 
  
