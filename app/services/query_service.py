@@ -1,6 +1,15 @@
+from exceptions import *
+
 def get_all_svc(model):...
 
-def get_by_id_svc(model, id):...
+def get_by_id_svc(model, id):
+    
+    response = model.query.get(id)
+    
+    if not response:
+        raise IdNotFound({"error": f"id {id} not found"}, HTTPStatus.BAD_REQUEST)
+    
+    return response
 
 def filter_svc(model, field):...
 
