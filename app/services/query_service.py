@@ -1,4 +1,8 @@
-def get_all_svc(model):...
+def get_all_svc(Model, order=None):
+    all_things = Model.query.order_by(order.desc()).all() if order != None else Model.query.all()
+    if len(all_things) == 0:
+         raise...
+    return all_things
 
 def get_by_id_svc(model, id):...
 
