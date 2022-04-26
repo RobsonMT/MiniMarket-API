@@ -4,20 +4,21 @@ from sqlalchemy import Column, ForeignKey, Integer, DateTime, Numeric
 from sqlalchemy.orm import relationship, backref
 from app.configs.database import db
 from datetime import datetime as dt
+
 @dataclass
 class SaleModel(db.Model):
-    
-    id : int
-    date : dt
+  
+    id: int
+    date: dt
     paid_date: dt
     client_id: int
     payment_id: int
     sale_total: float
     remain_to_pay: float
 
-    __tablename__ = 'sales'
+    __tablename__ = "sales"
 
-    id = Column(Integer, primary_key=True)  
+    id = Column(Integer, primary_key=True)
     date = Column(DateTime)
     paid_date = Column(DateTime)
     client_id = Column(Integer, ForeignKey("clients.id"), unique=True)
@@ -28,5 +29,5 @@ class SaleModel(db.Model):
     products = relationship(
         "ProductModel",
         secondary="sales_products",
-        backref=backref("products", uselist=True)
-        )
+        backref=backref("products", uselist=True),
+    )
