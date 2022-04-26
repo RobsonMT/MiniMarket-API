@@ -22,10 +22,10 @@ class UserModel(db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
-    email = Column(String(100), unique=True)
-    contact = Column(String(100))
-    password = Column(String(100))
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False, unique=True)
+    contact = Column(String(100), nullable=False)
+    password = Column(String(100), nullable=False)
     avatar = Column(String)
     created = Column(DateTime, default=dt.now())
     last_access = Column(DateTime, default=dt.now())

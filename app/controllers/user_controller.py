@@ -1,3 +1,8 @@
+from app.decorators import validate_fields
+from app.models.user_model import UserModel
+
+
+@validate_fields(UserModel)
 def post_user():
     return "ROTA create USER"
     """
@@ -5,6 +10,7 @@ def post_user():
     => verificar se o usuario e o id 1
         . rota protegida
     """
+
 
 def patch_user():
     return "ROTA path USER"
@@ -15,6 +21,7 @@ def patch_user():
     => verificar se o usuario e o id 1
     """
 
+
 def get_all():
     return "ROTA get USER"
 
@@ -23,6 +30,7 @@ def get_all():
     => verificar se o usuario e o id 1
         rota protegida
     """
+
 
 def get_by_id():
     return "ROTA get_by_id USER"
@@ -33,5 +41,3 @@ def get_by_id():
     => verificar se o usuario e o id 1
         rota protegida
     """
-
-    
