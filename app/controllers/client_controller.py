@@ -19,7 +19,10 @@ def get_one_client():
     rota protegida: busca um cliente especifico.
     verifica se o cliente pertence a esse comerciante
     """
-    return "get one client"
+    try:
+        return "get one client"
+    except ErrorFound as err:
+        return str(err)
 
 
 
