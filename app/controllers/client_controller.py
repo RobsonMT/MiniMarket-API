@@ -1,8 +1,10 @@
+
+
 def create_one_client():
     return "ROTA create CLIENT"
 
 
-def patch_client():
+def patch_client(id):
     """
     rota protegida: verifica se o dono da aplicação tem o cliente com base no id
     arquivar cliente
@@ -17,7 +19,7 @@ def get_all_clients():
     return "get_all_clients"
 
 
-def get_one_client():
+def get_one_client(id):
     """
     rota protegida: busca um cliente especifico.
     verifica se o cliente pertence a esse comerciante
