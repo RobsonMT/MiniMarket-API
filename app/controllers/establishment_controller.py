@@ -1,7 +1,3 @@
-def create_one_establishment():
-    return "ROTA create establishment"
-
-
 def patch_establishment():
     """
     rota protegida: verifica se o dono da aplicação tem o establishment com base no id
