@@ -3,9 +3,9 @@ from http import HTTPStatus
 from flask import jsonify
 
 from app.decorators import validate_fields
-from app.exceptions.generic_exception import IdNotFound
+from app.exceptions.generic_exception import IdNotFound, TableEmpty
 from app.models.user_model import UserModel
-from app.services.query_service import get_by_id_svc
+from app.services.query_service import get_all_svc, get_by_id_svc
 
 
 @validate_fields(UserModel)
@@ -29,7 +29,11 @@ def patch_user(id):
 
 
 def get_all():
-    return "ROTA get USER"
+    try:
+        users = get_all_svc(Model=UserModel)
+    except TableEmpty as err:
+        return err.args[0], err.args[1]
+    return jsonify(users), HTTPStatus.OK
 
     """"
     RETORNA TODOS OS USUARIOS

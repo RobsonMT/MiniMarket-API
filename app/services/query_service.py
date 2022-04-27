@@ -10,7 +10,7 @@ def get_all_svc(Model, order=None):
     )
 
     if len(all_things) == 0:
-        raise TableEmpty
+        raise TableEmpty({"error": "No registered user"}, HTTPStatus.BAD_REQUEST)
 
     return all_things
 
@@ -30,7 +30,7 @@ def create_svc(model, data):
     ...
 
 
-def update_svc(session ,model, id, data):
+def update_svc(session, model, id, data):
 
     response = get_by_id_svc(model, id)
 
