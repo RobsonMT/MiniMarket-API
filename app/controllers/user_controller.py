@@ -1,5 +1,11 @@
+from http import HTTPStatus
+
+from flask import jsonify
+
 from app.decorators import validate_fields
+from app.exceptions.generic_exception import IdNotFound
 from app.models.user_model import UserModel
+from app.services.query_service import get_by_id_svc
 
 
 @validate_fields(UserModel)
@@ -33,7 +39,11 @@ def get_all():
 
 
 def get_by_id(id):
-    return "ROTA get_by_id USER"
+    try:
+        user = get_by_id_svc(model=UserModel, id=id)
+    except IdNotFound as err:
+        return err.args[0], err.args[1]
+    return jsonify(user), HTTPStatus.OK
 
     """
     RETORNA UM USUÁRIO EXCECIFICO
