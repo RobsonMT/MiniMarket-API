@@ -1,6 +1,7 @@
 from flask import Flask
-from app.configs import database, migrations
+
 from app import routes
+from app.configs import database, migrations
 
 
 def create_app():
