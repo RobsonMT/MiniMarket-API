@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from email.policy import default
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from datetime import datetime as dt
+from email.policy import default
+
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import backref, relationship
+
 from app.configs.database import db
-from sqlalchemy.orm import relationship, backref
 
 
 @dataclass

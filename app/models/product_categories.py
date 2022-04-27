@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 from numbers import Integral
-from sqlalchemy import Column, Integer, ForeignKey
+
+from sqlalchemy import Column, ForeignKey, Integer
+
 from app.configs.database import db
+
 
 @dataclass
 class ProductCategory(db.Model):
-    
+
     id: int
     product_id: int
     category_id: int

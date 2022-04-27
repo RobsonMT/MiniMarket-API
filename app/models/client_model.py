@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Boolean, ForeignKey, Integer, String, DateTime
 from dataclasses import dataclass
-from sqlalchemy.orm import relationship, backref
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.orm import backref, relationship
+
 from app.configs.database import db
 
 

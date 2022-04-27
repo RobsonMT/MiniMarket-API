@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
-from app.exceptions import IdNotFound, TableEmpty
 from flask import current_app
+
+from app.exceptions import IdNotFound, TableEmpty
 
 session = current_app.db.session
 

@@ -2,8 +2,9 @@ from functools import wraps
 from http import HTTPStatus
 from typing import Callable
 
-from app.exceptions import MissingKeyError, WrongKeyError
 from flask import request
+
+from app.exceptions import MissingKeyError, WrongKeyError
 
 
 def validate_fields(Model):

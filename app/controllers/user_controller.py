@@ -12,7 +12,7 @@ def post_user():
     """
 
 
-def patch_user():
+def patch_user(id):
     return "ROTA path USER"
 
     """
@@ -32,7 +32,7 @@ def get_all():
     """
 
 
-def get_by_id():
+def get_by_id(id):
     return "ROTA get_by_id USER"
 
     """

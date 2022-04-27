@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from enum import unique
-from sqlalchemy import Column, ForeignKey, Integer, DateTime, Numeric
-from sqlalchemy.orm import relationship, backref
-from app.configs.database import db
 from datetime import datetime as dt
+from enum import unique
+
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric
+from sqlalchemy.orm import backref, relationship
+
+from app.configs.database import db
 
 
 @dataclass
