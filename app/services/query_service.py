@@ -5,14 +5,14 @@ from app.exceptions import IdNotFound, TableEmpty
 
 def get_all_svc(Model, order=None):
 
-    all_things = (
+    response = (
         Model.query.order_by(order.desc()).all() if order != None else Model.query.all()
     )
 
-    if len(all_things) == 0:
+    if len(response) == 0:
         raise TableEmpty
 
-    return all_things
+    return response
 
 
 def get_by_id_svc(model, id):
@@ -33,13 +33,14 @@ def create_svc(model, data):
 def update_svc(session ,model, id, data):
 
     response = get_by_id_svc(model, id)
-
+    
     for key, value in data.items():
         setattr(response, key, value)
 
     session.add(response)
     session.commit()
 
+    return response
 
 def delete_svc(model, id):
     ...
