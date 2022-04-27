@@ -9,8 +9,13 @@ def get_all_svc(Model, order=None):
         Model.query.order_by(order.desc()).all() if order != None else Model.query.all()
     )
 
+<<<<<<< HEAD
+    if len(all_things) == 0:
+        raise TableEmpty({"error": "No registered user"}, HTTPStatus.BAD_REQUEST)
+=======
     if len(response) == 0:
         raise TableEmpty
+>>>>>>> 4779e0216948a452011f010b9ed3532f89a80c1b
 
     return response
 
@@ -30,7 +35,7 @@ def create_svc(model, data):
     ...
 
 
-def update_svc(session ,model, id, data):
+def update_svc(session, model, id, data):
 
     response = get_by_id_svc(model, id)
     
