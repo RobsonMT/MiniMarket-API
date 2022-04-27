@@ -31,5 +31,5 @@ class SaleModel(db.Model):
     products = relationship(
         "ProductModel",
         secondary="sales_products",
-        backref=backref("products", uselist=True),
+        backref=backref("sales_products", uselist=True),
     )
