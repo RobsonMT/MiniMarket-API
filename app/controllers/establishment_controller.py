@@ -1,4 +1,4 @@
-def patch_establishment():
+def patch_establishment(id):
     """
     rota protegida: verifica se o dono da aplicação tem o establishment com base no id
     arquivar establishmente
@@ -13,7 +13,7 @@ def get_all_establishments():
     return "get_all_establishments"
 
 
-def get_one_establishment():
+def get_one_establishment(id):
     """
     rota protegida: busca um establishment especifico.
     verifica se o establishmente pertence a esse comerciante
