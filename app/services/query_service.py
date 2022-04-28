@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from app.exceptions import IdNotFound, TableEmpty
+from flask import current_app, jsonify
 
 
 def get_all_svc(Model, order=None):
@@ -26,8 +27,16 @@ def filter_svc(model, field, search):
     ...
 
 
-def create_svc(model, data):
-    ...
+def create_svc(Model, data):
+    
+    session = current_app.db.session
+    
+    new_data = Model(**data)
+
+    session.add(new_data)
+    session.commit()
+
+    return jsonify(new_data)
 
 
 def update_svc(session, model, id, data):
