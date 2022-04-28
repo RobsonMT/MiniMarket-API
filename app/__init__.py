@@ -1,7 +1,7 @@
 from flask import Flask
 
 from app import routes
-from app.configs import database, migrations, jwt_auth
+from app.configs import database, jwt_auth, migrations
 
 
 def create_app():
