@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from app.exceptions import IdNotFound, TableEmpty
+from flask import current_app, jsonify
 
 
 def get_all_svc(Model, order=None):
@@ -9,13 +10,8 @@ def get_all_svc(Model, order=None):
         Model.query.order_by(order.desc()).all() if order != None else Model.query.all()
     )
 
-<<<<<<< HEAD
-    if len(all_things) == 0:
-        raise TableEmpty({"error": "No registered user"}, HTTPStatus.BAD_REQUEST)
-=======
     if len(response) == 0:
         raise TableEmpty
->>>>>>> 4779e0216948a452011f010b9ed3532f89a80c1b
 
     return response
 
@@ -31,8 +27,16 @@ def filter_svc(model, field, search):
     ...
 
 
-def create_svc(model, data):
-    ...
+def create_svc(Model, data):
+    
+    session = current_app.db.session
+    
+    new_data = Model(**data)
+
+    session.add(new_data)
+    session.commit()
+
+    return jsonify(new_data)
 
 
 def update_svc(session, model, id, data):

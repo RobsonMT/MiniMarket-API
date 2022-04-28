@@ -1,16 +1,10 @@
 from app.decorators import validate_fields
-<<<<<<< HEAD
-from app.exceptions.generic_exception import IdNotFound, TableEmpty
-from app.models.user_model import UserModel
-from app.services.query_service import get_all_svc, get_by_id_svc
-=======
 from app.exceptions import IdNotFound, WrongKeyError, InvalidCellphone, CellphoneAlrealyExists, EmailAlrealyExists,TableEmpty
 from app.models.user_model import UserModel
 from app.services.query_service import get_by_id_svc, update_svc
 from app.services.query_user_service import validate_user_data_svc
 from flask import current_app, jsonify, request
 from http import HTTPStatus
->>>>>>> 4779e0216948a452011f010b9ed3532f89a80c1b
 
 
 @validate_fields(UserModel)
