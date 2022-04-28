@@ -1,5 +1,12 @@
 from app.decorators import validate_fields
-from app.exceptions import IdNotFound, WrongKeyError, InvalidCellphone, CellphoneAlrealyExists, EmailAlrealyExists,TableEmpty
+from app.exceptions import (
+    IdNotFound,
+    WrongKeyError,
+    InvalidCellphone,
+    CellphoneAlrealyExists,
+    EmailAlrealyExists,
+    TableEmpty,
+)
 from app.models.user_model import UserModel
 from app.services.query_service import get_by_id_svc, update_svc
 from app.services.query_user_service import validate_user_data_svc
@@ -22,13 +29,15 @@ def patch_user(id):
     session = current_app.db.session
 
     try:
-        validate_keys =validate_user_data_svc(data, UserModel)
+        validate_keys = validate_user_data_svc(data, UserModel)
         update_user = update_svc(session, UserModel, id, validate_keys)
-       
+
         return jsonify(update_user), 200
 
     except CellphoneAlrealyExists:
-        return {"Error": f"The cellphone{data['contact']} alrealy exists in database"}, 409
+        return {
+            "Error": f"The cellphone{data['contact']} alrealy exists in database"
+        }, 409
 
     except EmailAlrealyExists:
         return {"Error": f"The email{data['email']} alrealy exists in database"}, 409
@@ -43,7 +52,10 @@ def patch_user(id):
         return {"Error": "The table is empty"}, 400
 
     except WrongKeyError:
-        return {"Error": "Your request can have the keys name, email, contact, password, avatar e is_activate. But invalid keys went found"}, 400
+        return {
+            "Error": "Your request can have the keys name, email, contact, password, avatar e is_activate. But invalid keys went found"
+        }, 400
+
 
 def get_all():
     try:
@@ -65,7 +77,6 @@ def get_by_id(id):
     except IdNotFound as err:
         return err.args[0], err.args[1]
     return jsonify(user), HTTPStatus.OK
-
 
     """
     RETORNA UM USUÁRIO EXPECIFICO

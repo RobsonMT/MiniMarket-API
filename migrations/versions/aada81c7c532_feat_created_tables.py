@@ -81,7 +81,7 @@ def upgrade():
         sa.Column("avatar", sa.String(), nullable=True),
         sa.Column("contact", sa.String(), nullable=True),
         sa.Column("estabilishment_id", sa.Integer(), nullable=True),
-        sa.Column("pay_day", sa.DateTime(), nullable=True),
+        sa.Column("pay_day", sa.Integer(), nullable=True),
         sa.Column("is_dobtor", sa.Boolean(), nullable=True),
         sa.Column("is_late", sa.Boolean(), nullable=True),
         sa.Column("is_activate", sa.Boolean(), nullable=True),
