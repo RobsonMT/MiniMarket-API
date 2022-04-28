@@ -22,9 +22,3 @@ class AddressModel(db.Model):
     number = Column(Integer)
     zip_code = Column(String)
     district = Column(String)
-
-    establishment = relationship(
-        "EstablishmentModel",
-        backref=backref("establishments", uselist=False),
-        uselist=False,
-    )
