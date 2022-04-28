@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
+from flask import current_app, jsonify
 
 from app.exceptions import IdNotFound, TableEmpty
-from flask import current_app, jsonify
 
 
 def get_all_svc(Model, order=None):
