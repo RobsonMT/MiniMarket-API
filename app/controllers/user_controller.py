@@ -8,7 +8,7 @@ from app.exceptions import (
     TableEmpty,
 )
 from app.models.user_model import UserModel
-from app.services.query_service import get_all_svc, get_by_id_svc, update_svc
+from app.services.query_service import get_by_id_svc, update_svc
 from app.services.query_user_service import validate_user_data_svc
 from flask import current_app, jsonify, request
 from http import HTTPStatus

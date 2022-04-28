@@ -19,7 +19,7 @@ class UserModel(db.Model):
     created: dt
     last_access: dt
     is_activate: bool
-    # establishment: list
+    establishment: list
 
     __tablename__ = "users"
 
