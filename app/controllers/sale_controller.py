@@ -35,10 +35,10 @@ def get_sales():
     query_service.get_all_svc(SaleModel)
     return "ROTA get (all) SALES"
 
-
+@jwt_required()
 def get_sale_by_id(id):
     try:
-        query_service.get_by_id_svc(SaleModel, id)
+        sale = query_service.get_by_id_svc(SaleModel, id)
     except:
-        return {"error": "id doesn't exist"}, HTTPStatus.BAD_REQUEST
-    return "ROTA get_sale_by_id SALE"
+        return {"error": "Sale (ID) doesn't exist"}, HTTPStatus.BAD_REQUEST
+    return jsonify(sale), 200
