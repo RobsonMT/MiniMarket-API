@@ -1,5 +1,6 @@
-from flask import request
-from app.services.query_service import create_svc
+from flask import request, jsonify
+from app.services.query_service import create_svc, update_svc,get_by_id_svc
+from app.decorators import validate
 from app.models import AddressModel, EstablishmentModel, UserModel
 from http import HTTPStatus
 from app.exceptions.generic_exception import IdNotFound
@@ -25,12 +26,17 @@ def post_establishment():
     except:
         ...
 
+@jwt_required()
+@validate(EstablishmentModel)
 def patch_establishment(id):
-    """
-    rota protegida: verifica se o dono da aplicação tem o establishment com base no id
-    arquivar establishmente
-    """
-    return "Rota patch establishment"
+    data = request.get_json()
+
+    try:
+        update = update_svc(EstablishmentModel, id, data)
+        return jsonify(update)
+   
+    except IdNotFound as err:
+        return err.args[0], err.args[1]
 
 
 @jwt_required()

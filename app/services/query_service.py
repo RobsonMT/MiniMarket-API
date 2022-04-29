@@ -40,13 +40,17 @@ def create_svc(Model, data):
     return jsonify(new_data)
 
 
-def update_svc(session, model, id, data):
-
+def update_svc(model, id, data):
     response = get_by_id_svc(model, id)
+    session = current_app.db.session
+
 
     for key, value in data.items():
         setattr(response, key, value)
 
+    if not response:
+        raise IdNotFound({"error": f"id {id} not found"}, HTTPStatus.BAD_REQUEST)
+    
     session.add(response)
     session.commit()
 
