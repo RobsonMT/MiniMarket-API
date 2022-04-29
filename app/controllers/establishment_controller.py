@@ -1,10 +1,19 @@
-def patch_establishment(id):
-    """
-    rota protegida: verifica se o dono da aplicação tem o establishment com base no id
-    arquivar establishmente
-    """
-    return "Rota patch establishment"
+from app.services.query_service import update_svc
+from flask import jsonify, request, current_app
+from app.models import EstablishmentModel
+from app.decorators import validate
+from app.exceptions  import IdNotFound
 
+@validate(EstablishmentModel)
+def patch_establishment(id):
+    data = request.get_json()
+
+    try:
+        update = update_svc(EstablishmentModel, id, data)
+        return jsonify(update)
+   
+    except IdNotFound as err:
+        return err.args[0], err.args[1]
 
 def get_all_establishments():
     """
@@ -19,3 +28,4 @@ def get_one_establishment(id):
     verifica se o establishmente pertence a esse comerciante
     """
     return "get one establishment"
+
