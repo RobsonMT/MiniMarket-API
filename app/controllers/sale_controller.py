@@ -1,18 +1,20 @@
 from http import HTTPStatus
 
-from flask import jsonify, request
-
 from app.models.sale_model import SaleModel
 from app.services import query_service
+from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from sqlalchemy.exc import IntegrityError
 
 
 def post_sale():
-    # obj_body = request.get_json()
-    # try:
-    # query_service.create_svc(SaleModel, obj_body)
-    # except:
-    # return {"error": "sale already registered"}, HTTPStatus.CONFLICT
-    return "ROTA post (create) SALE"
+    data = request.get_json()
+
+    try:
+        query_service.create_svc(SaleModel, data)
+        return jsonify(data), 201
+    except IntegrityError:
+        return {"error": "sale already registered"}, 409
 
 
 def patch_sale(id):
