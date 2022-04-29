@@ -3,11 +3,11 @@ from app.services.query_service import create_svc, update_svc, get_by_id_svc
 from app.decorators import validate
 from app.models import AddressModel, EstablishmentModel, UserModel
 from http import HTTPStatus
-from app.exceptions.generic_exception import IdNotFound
+from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.services.query_service import get_by_id_svc
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
-
+@jwt_required
 def post_establishment():
     data = request.get_json()
     address = data.pop("address")
@@ -29,14 +29,22 @@ def post_establishment():
 @jwt_required()
 @validate(EstablishmentModel)
 def patch_establishment(id):
+    user_id = get_jwt_identity()["id"]
     data = request.get_json()
 
     try:
+        search_establishment = get_by_id_svc(model=EstablishmentModel, id=id)
+        if user_id != 1 and search_establishment.user_id !=user_id:
+            raise UnauthorizedUser
+
         update = update_svc(EstablishmentModel, id, data)
         return jsonify(update)
 
     except IdNotFound as err:
         return err.args[0], err.args[1]
+
+    except UnauthorizedUser:
+        return {"Error": "Unauthorized user" }, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()

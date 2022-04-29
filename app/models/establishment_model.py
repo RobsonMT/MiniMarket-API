@@ -35,9 +35,9 @@ class EstablishmentModel(db.Model):
     address = relationship("AddressModel", backref="address", uselist=False)
 
     clients = relationship(
-        "ClientModel", backref=backref("clients", uselist=True), uselist=False
+        "ClientModel", backref=backref("clients", uselist=True)
     )
 
     products = relationship(
-        "ProductModel", backref=backref("products", uselist=True), uselist=False
+        "ProductModel", backref=backref("products", uselist=True)
     )
