@@ -1,12 +1,26 @@
-from http import HTTPStatus
 
+from http import HTTPStatus
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token, get_jwt_identity, jwt_required)
 from app.exceptions.generic_exception import IdNotFound
-from app.models.establishment_model import EstablishmentModel
 from app.models.user_model import UserModel
-from app.services.query_service import get_by_id_svc
+from app.services.query_service import get_by_id_svc, create_svc
+from app.models import AddressModel, EstablishmentModel
 
+def post_establishment():
+    data = request.get_json()
+    address = data.pop('address')
+    
+    try:
+        create_svc(AddressModel, address)
+        
+        data['address_id'] = AddressModel.query.filter_by(zip_code=address.get('zip_code')).first().id
+        
+        new_establishment = create_svc(EstablishmentModel, data)
+
+        return new_establishment, HTTPStatus.CREATED
+    except:
+        ...
 
 def patch_establishment(id):
     """
