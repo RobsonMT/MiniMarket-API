@@ -4,11 +4,15 @@ from flask import current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 
 from app.decorators import validate_fields
-from app.exceptions import (CellphoneAlrealyExists, EmailAlrealyExists,
-                            IdNotFound, InvalidCellphone, TableEmpty,
-                            WrongKeyError)
+from app.exceptions import (
+    CellphoneAlrealyExists, 
+    EmailAlrealyExists,
+    IdNotFound, InvalidCellphone,
+    TableEmpty,
+    WrongKeyError
+    )
 from app.models.user_model import UserModel
-from app.services.query_service import get_all_svc, get_by_id_svc, update_svc
+from app.services.query_service import get_all_svc, get_by_id_svc, update_svc, filter_svc
 from app.services.query_user_service import validate_user_data_svc
 
 
@@ -67,3 +71,13 @@ def get_by_id(id):
     except IdNotFound as err:
         return err.args[0], err.args[1]
     return jsonify(user), HTTPStatus.OK
+
+def get_by_filter():
+    data = request.get_json()
+    
+    try:
+        user_found = filter_svc(UserModel, data)
+        
+        return user_found, HTTPStatus.FOUND
+    except:
+        pass
