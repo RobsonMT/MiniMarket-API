@@ -4,6 +4,7 @@ from datetime import datetime as dt
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import backref, relationship
 from werkzeug.security import check_password_hash, generate_password_hash
+
 from app.configs.database import db
 
 

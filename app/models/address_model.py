@@ -9,7 +9,7 @@ from app.configs.database import db
 @dataclass
 class AddressModel(db.Model):
 
-    id: int
+    # id: int
     street: str
     number: int
     zip_code: str

@@ -16,8 +16,8 @@ class EstablishmentModel(db.Model):
     cnpj: str
     contact: str
     url_logo: str
-    user_id: int
-    address_id: int
+    # user_id: int
+    # address_id: int
     address: object
     # clients: list
     # products: list
@@ -30,7 +30,7 @@ class EstablishmentModel(db.Model):
     contact = Column(String)
     url_logo = Column(String)
     address_id = Column(Integer, ForeignKey("adresses.id"), unique=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
 
     address = relationship("AddressModel", backref="address", uselist=False)
 
