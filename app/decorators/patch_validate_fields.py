@@ -4,7 +4,8 @@ from typing import Callable
 
 from flask import request
 
-from app.exceptions import MissingKeyError, WrongKeyError
+from app.exceptions import WrongKeyError
+
 
 def validate(Model):
     def decorator(func: Callable):
@@ -28,5 +29,7 @@ def validate(Model):
                 return func(*args, **kwargs)
             except (WrongKeyError) as e:
                 return e.args[0], HTTPStatus.BAD_REQUEST
+
         return wrapper
+
     return decorator

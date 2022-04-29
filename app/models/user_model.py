@@ -11,7 +11,7 @@ from app.configs.database import db
 @dataclass
 class UserModel(db.Model):
 
-    # id: int
+    id: int
     name: str
     email: str
     contact: str
