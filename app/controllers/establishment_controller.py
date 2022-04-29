@@ -1,22 +1,13 @@
 from http import HTTPStatus
-<<<<<<< HEAD
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
-from app.services.query_service import get_by_id_svc
 from flask_jwt_extended import get_jwt_identity, jwt_required
-
-@jwt_required
-=======
-
 from flask import jsonify, request
-from flask_jwt_extended import get_jwt_identity, jwt_required
-
 from app.decorators import validate
 from app.exceptions.generic_exception import IdNotFound
 from app.models import AddressModel, EstablishmentModel, UserModel
 from app.services.query_service import create_svc, get_by_id_svc, update_svc
 
-
->>>>>>> 0fef58b0214f3da8b55d2012c333b3fa4383980e
+@jwt_required
 def post_establishment():
     data = request.get_json()
     address = data.pop("address")
