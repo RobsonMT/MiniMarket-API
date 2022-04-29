@@ -1,3 +1,4 @@
+from .address_model import AddressModel
 from .categories_model import CategoryModel
 from .client_model import ClientModel
 from .establishment_model import EstablishmentModel
@@ -7,4 +8,3 @@ from .product_model import ProductModel
 from .sale_model import SaleModel
 from .sale_product_model import SaleProductModel
 from .user_model import UserModel
-from .address_model import AddressModel
