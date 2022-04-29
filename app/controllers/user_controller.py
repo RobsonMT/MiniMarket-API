@@ -1,8 +1,10 @@
 from http import HTTPStatus
-from flask import  jsonify, request
+
+from flask import jsonify, request
 from flask_jwt_extended import jwt_required
+
 from app.decorators import validate_fields
-from app.exceptions import  IdNotFound,  TableEmpty
+from app.exceptions import IdNotFound, TableEmpty
 from app.models.user_model import UserModel
 from app.services.query_service import get_all_svc, get_by_id_svc, update_svc
 from app.services.query_user_service import validate_user_data_svc
@@ -24,7 +26,7 @@ def patch_user(id):
         return jsonify(update_user), 200
     except IdNotFound as err:
         return err.args[0], err.args[1]
- 
+
 
 @jwt_required()
 def get_all():
