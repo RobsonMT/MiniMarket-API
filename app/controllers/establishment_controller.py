@@ -22,7 +22,7 @@ def post_establishment():
         
         new_establishment = create_svc(EstablishmentModel, data)
 
-        return new_establishment
+        return new_establishment, HTTPStatus.CREATED
     except:
         ...
 

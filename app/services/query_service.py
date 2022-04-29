@@ -27,13 +27,12 @@ def get_by_id_svc(model, id):
 def filter_svc(model, field, search):
     ...
 
+from ipdb import set_trace
 
 def create_svc(Model, data):
 
     session = current_app.db.session
-
     new_data = Model(**data)
-
     session.add(new_data)
     session.commit()
 
