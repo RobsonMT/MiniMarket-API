@@ -1,3 +1,10 @@
+from http import HTTPStatus
+
+from app.exceptions import TableEmpty
+from app.models import ProductModel, EstablishmentModel
+from app.services.query_service import get_by_id_svc
+
+
 def create_one_product():
     return "ROTA create product"
 
@@ -10,11 +17,13 @@ def patch_product(id):
     return "Rota patch product"
 
 
-def get_all_products():
-    """
-    rota protegida: busca todos os productes desse vendedor
-    """
-    return "get_all_products"
+def get_all_products(establishment_id):
+    products = (
+        get_by_id_svc(EstablishmentModel,establishment_id).products
+    )
+    if products == []:
+        return {"error": "You don't have any products"}, HTTPStatus.BAD_REQUEST
+    return {"products": products}, HTTPStatus.OK
 
 
 def get_one_product(id):

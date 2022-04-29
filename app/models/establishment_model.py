@@ -20,7 +20,7 @@ class EstablishmentModel(db.Model):
     # address_id: int
     address: object
     # clients: list
-    # products: list
+    products: list
 
     __tablename__ = "establishments"
 
@@ -38,6 +38,6 @@ class EstablishmentModel(db.Model):
         "ClientModel", backref=backref("clients", uselist=True), uselist=False
     )
 
-    # products = relationship(
-    #     "ProductModel", backref=backref("products", uselist=True), uselist=False
-    # )
+    products = relationship(
+        "ProductModel", backref=backref("products", uselist=True), uselist=False
+    )
