@@ -25,9 +25,9 @@ class EstablishmentModel(db.Model):
     __tablename__ = "establishments"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
-    cnpj = Column(String(100), unique=True)
-    contact = Column(String)
+    name = Column(String(100), nullable=False)
+    cnpj = Column(String(100), unique=True, nullable=False)
+    contact = Column(String, nullable=False)
     url_logo = Column(String)
     address_id = Column(Integer, ForeignKey("adresses.id"), unique=True)
     user_id = Column(Integer, ForeignKey("users.id"))
