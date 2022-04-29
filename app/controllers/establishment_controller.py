@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from sqlalchemy.exc import IntegrityError
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask import jsonify, request
@@ -6,24 +7,39 @@ from app.decorators import validate
 from app.exceptions.generic_exception import IdNotFound
 from app.models import AddressModel, EstablishmentModel, UserModel
 from app.services.query_service import create_svc, get_by_id_svc, update_svc
+from psycopg2.errors import NotNullViolation
 
-@jwt_required
+@jwt_required()
 def post_establishment():
     data = request.get_json()
+    data["user_id"] = get_jwt_identity()["id"]
     address = data.pop("address")
 
+    data["address_id"] = (AddressModel.query.filter_by(number=address.get("number")).first())
+    
+    establishment = (EstablishmentModel.query.filter_by(cnpj=data.get("cnpj")).first())
+    
+    if data["address_id"] != None:
+        return {"error": "address already registered"}, HTTPStatus.BAD_REQUEST
+    
+    if establishment != None:
+        return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
+    
     try:
         create_svc(AddressModel, address)
+    except IntegrityError as err:
+        if type(err.orig) == NotNullViolation:
+            return {"error": "Field(s) Missing on address"}, HTTPStatus.BAD_REQUEST
 
-        data["address_id"] = (
-            AddressModel.query.filter_by(zip_code=address.get("zip_code")).first().id
-        )
+    data["address_id"] = (AddressModel.query.filter_by(number=address.get("number")).first().id)
 
+    try:
         new_establishment = create_svc(EstablishmentModel, data)
+    except IntegrityError as err:
+        if type(err.orig) == NotNullViolation:
+            return {"error": "Field(s) Missing on establishment"}, HTTPStatus.BAD_REQUEST
 
-        return new_establishment, HTTPStatus.CREATED
-    except:
-        ...
+    return new_establishment, HTTPStatus.CREATED
 
 
 @jwt_required()
