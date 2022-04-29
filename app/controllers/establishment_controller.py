@@ -1,13 +1,22 @@
-from flask import request, jsonify
-from app.services.query_service import create_svc, update_svc, get_by_id_svc
-from app.decorators import validate
-from app.models import AddressModel, EstablishmentModel, UserModel
 from http import HTTPStatus
+<<<<<<< HEAD
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.services.query_service import get_by_id_svc
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 @jwt_required
+=======
+
+from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
+from app.decorators import validate
+from app.exceptions.generic_exception import IdNotFound
+from app.models import AddressModel, EstablishmentModel, UserModel
+from app.services.query_service import create_svc, get_by_id_svc, update_svc
+
+
+>>>>>>> 0fef58b0214f3da8b55d2012c333b3fa4383980e
 def post_establishment():
     data = request.get_json()
     address = data.pop("address")
@@ -75,14 +84,8 @@ def get_one_establishment(id):
 
 
 @jwt_required()
-def get_establishment_by_name():
-    data = request.get_json()
-    if len(data) != 1:
-        return {"error": "Invalid number of fields"}, HTTPStatus.BAD_REQUEST
-    try:
-        name = data["name"]
-    except:
-        return {"error": "The field passed is invalid"}, HTTPStatus.BAD_REQUEST
+def get_establishment_by_name(name):
+    name = name.title()
     user_email = get_jwt_identity()["email"]
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
@@ -92,7 +95,7 @@ def get_establishment_by_name():
             EstablishmentModel.name.like(name)
         ).one()
     except:
-        return {"error": f"Name {data['name']} not found"}, HTTPStatus.BAD_REQUEST
+        return {"error": f"Name {name} not found"}, HTTPStatus.BAD_REQUEST
     establishments = [place for place in establishments if place == establishment]
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
