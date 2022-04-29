@@ -1,18 +1,25 @@
 from http import HTTPStatus
 
-from flask import jsonify, request
-
+from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models.sale_model import SaleModel
 from app.services import query_service
+from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from sqlalchemy.exc import IntegrityError
 
 
+@jwt_required()
 def post_sale():
-    # obj_body = request.get_json()
-    # try:
-    # query_service.create_svc(SaleModel, obj_body)
-    # except:
-    # return {"error": "sale already registered"}, HTTPStatus.CONFLICT
-    return "ROTA post (create) SALE"
+    data = request.get_json()
+    try:
+            query_service.create_svc(SaleModel, data)
+            return jsonify(data), 201
+    except UnauthorizedUser:
+        return {"error": "Unauthorized user."}, 401
+    except IntegrityError:
+        return {"error": "Sale (ID) already exists."}, 409
+
+        
 
 
 def patch_sale(id):
