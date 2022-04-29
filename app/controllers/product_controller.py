@@ -1,3 +1,9 @@
+from http import HTTPStatus
+
+from app.exceptions import TableEmpty
+from app.models import ProductModel
+
+
 def create_one_product():
     return "ROTA create product"
 
@@ -10,11 +16,13 @@ def patch_product(id):
     return "Rota patch product"
 
 
-def get_all_products():
-    """
-    rota protegida: busca todos os productes desse vendedor
-    """
-    return "get_all_products"
+def get_all_products(establishment_id):
+    products = (
+        ProductModel.query.filter(ProductModel.establieshment_id.like(establishment_id)).all()
+    )
+    if products == []:
+        return {"error": "You don't have any products"}, HTTPStatus.BAD_REQUEST
+    return {"products": products}, HTTPStatus.OK
 
 
 def get_one_product(id):
