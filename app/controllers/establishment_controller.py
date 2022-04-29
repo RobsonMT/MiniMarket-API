@@ -1,12 +1,30 @@
-from app.services.query_service import update_svc,get_by_id_svc
-from flask import jsonify, request
-from app.models import EstablishmentModel
+from flask import request, jsonify
+from app.services.query_service import create_svc, update_svc,get_by_id_svc
 from app.decorators import validate
-from app.exceptions  import IdNotFound
+from app.models import AddressModel, EstablishmentModel, UserModel
 from http import HTTPStatus
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-                                
-from app.models.user_model import UserModel
+from app.exceptions.generic_exception import IdNotFound
+from app.services.query_service import get_by_id_svc
+from flask_jwt_extended import (
+    create_access_token, 
+    get_jwt_identity,
+    jwt_required
+    )
+
+def post_establishment():
+    data = request.get_json()
+    address = data.pop('address')
+    
+    try:
+        create_svc(AddressModel, address)
+        
+        data['address_id'] = AddressModel.query.filter_by(zip_code=address.get('zip_code')).first().id
+        
+        new_establishment = create_svc(EstablishmentModel, data)
+
+        return new_establishment
+    except:
+        ...
 
 @jwt_required()
 @validate(EstablishmentModel)
