@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
 from app.exceptions import TableEmpty
-from app.models import ProductModel
+from app.models import ProductModel, EstablishmentModel
+from app.services.query_service import get_by_id_svc
 
 
 def create_one_product():
@@ -18,7 +19,7 @@ def patch_product(id):
 
 def get_all_products(establishment_id):
     products = (
-        ProductModel.query.filter(ProductModel.establieshment_id.like(establishment_id)).all()
+        get_by_id_svc(EstablishmentModel,establishment_id).products
     )
     if products == []:
         return {"error": "You don't have any products"}, HTTPStatus.BAD_REQUEST
