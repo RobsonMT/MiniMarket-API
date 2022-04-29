@@ -1,16 +1,19 @@
 from http import HTTPStatus
+
 from flask import request
-from app.services.query_service import create_svc
+
 from app.models import ClientModel
+from app.services.query_service import create_svc
+
 
 def post_client():
-    
+
     data = request.get_json()
 
     try:
-        
+
         new_client = create_svc(ClientModel, data)
-        
+
         return new_client, HTTPStatus.CREATED
     except:
         ...
