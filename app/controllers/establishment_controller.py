@@ -1,9 +1,7 @@
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import (create_access_token, get_jwt_identity,
-                                jwt_required)
-
+from flask_jwt_extended import (create_access_token, get_jwt_identity, jwt_required)
 from app.exceptions.generic_exception import IdNotFound
 from app.models.establishment_model import EstablishmentModel
 from app.models.user_model import UserModel
