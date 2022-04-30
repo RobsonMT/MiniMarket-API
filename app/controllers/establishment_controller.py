@@ -1,13 +1,15 @@
 from http import HTTPStatus
-from sqlalchemy.exc import IntegrityError
-from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
-from flask_jwt_extended import get_jwt_identity, jwt_required
+
 from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from psycopg2.errors import NotNullViolation
+from sqlalchemy.exc import IntegrityError
+
 from app.decorators import validate
-from app.exceptions.generic_exception import IdNotFound
+from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import AddressModel, EstablishmentModel, UserModel
 from app.services.query_service import create_svc, get_by_id_svc, update_svc
-from psycopg2.errors import NotNullViolation
+
 
 @jwt_required()
 def post_establishment():
@@ -15,29 +17,35 @@ def post_establishment():
     data["user_id"] = get_jwt_identity()["id"]
     address = data.pop("address")
 
-    data["address_id"] = (AddressModel.query.filter_by(number=address.get("number")).first())
-    
-    establishment = (EstablishmentModel.query.filter_by(cnpj=data.get("cnpj")).first())
-    
+    data["address_id"] = AddressModel.query.filter_by(
+        number=address.get("number")
+    ).first()
+
+    establishment = EstablishmentModel.query.filter_by(cnpj=data.get("cnpj")).first()
+
     if data["address_id"] != None:
         return {"error": "address already registered"}, HTTPStatus.BAD_REQUEST
-    
+
     if establishment != None:
         return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
-    
+
     try:
         create_svc(AddressModel, address)
     except IntegrityError as err:
         if type(err.orig) == NotNullViolation:
             return {"error": "Field(s) Missing on address"}, HTTPStatus.BAD_REQUEST
 
-    data["address_id"] = (AddressModel.query.filter_by(number=address.get("number")).first().id)
+    data["address_id"] = (
+        AddressModel.query.filter_by(number=address.get("number")).first().id
+    )
 
     try:
         new_establishment = create_svc(EstablishmentModel, data)
     except IntegrityError as err:
         if type(err.orig) == NotNullViolation:
-            return {"error": "Field(s) Missing on establishment"}, HTTPStatus.BAD_REQUEST
+            return {
+                "error": "Field(s) Missing on establishment"
+            }, HTTPStatus.BAD_REQUEST
 
     return new_establishment, HTTPStatus.CREATED
 
@@ -50,7 +58,7 @@ def patch_establishment(id):
 
     try:
         search_establishment = get_by_id_svc(model=EstablishmentModel, id=id)
-        if user_id != 1 and search_establishment.user_id !=user_id:
+        if user_id != 1 and search_establishment.user_id != user_id:
             raise UnauthorizedUser
 
         update = update_svc(EstablishmentModel, id, data)
@@ -60,7 +68,7 @@ def patch_establishment(id):
         return err.args[0], err.args[1]
 
     except UnauthorizedUser:
-        return {"Error": "Unauthorized user" }, HTTPStatus.UNAUTHORIZED
+        return {"Error": "Unauthorized user"}, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()

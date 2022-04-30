@@ -20,7 +20,7 @@ class UserModel(db.Model):
     created: dt
     last_access: dt
     is_activate: bool
-    establishment: list
+    establishments: list
 
     __tablename__ = "users"
 
@@ -34,7 +34,7 @@ class UserModel(db.Model):
     last_access = Column(DateTime, default=dt.now())
     is_activate = Column(Boolean, default=True)
 
-    establishment = relationship(
+    establishments = relationship(
         "EstablishmentModel",
         backref=backref("owner", uselist=False),
         uselist=True,
