@@ -16,7 +16,7 @@ class EstablishmentModel(db.Model):
     cnpj: str
     contact: str
     url_logo: str
-    # user_id: int
+    user_id: int
     # address_id: int
     address: object
     # clients: list
@@ -34,10 +34,6 @@ class EstablishmentModel(db.Model):
 
     address = relationship("AddressModel", backref="address", uselist=False)
 
-    clients = relationship(
-        "ClientModel", backref=backref("clients", uselist=True)
-    )
+    clients = relationship("ClientModel", backref=backref("clients", uselist=True))
 
-    products = relationship(
-        "ProductModel", backref=backref("products", uselist=True)
-    )
+    products = relationship("ProductModel", backref=backref("products", uselist=True))

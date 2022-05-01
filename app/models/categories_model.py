@@ -16,11 +16,9 @@ class CategoryModel(db.Model):
     __tablename__ = "categories"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
+    name = Column(String(100), nullable=False, unique=True)
     url_img = Column(String)
 
     products = relationship(
-        "ProductModel",
-        secondary="product_categories",
-        backref=backref("categories", uselist=True),
+        "ProductModel", secondary="product_categories", back_populates="categories"
     )
