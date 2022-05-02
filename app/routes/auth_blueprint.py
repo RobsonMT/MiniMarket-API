@@ -6,4 +6,4 @@ bp_auth = Blueprint("bp_auth", __name__)
 
 bp_auth.post("/signin")(auth_controller.signin)
 bp_auth.post("/signup")(auth_controller.signup)
-bp_auth.get("/user")(auth_controller.get_user)
+bp_auth.get("/users")(auth_controller.get_user)

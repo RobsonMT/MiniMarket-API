@@ -4,6 +4,7 @@ from http import HTTPStatus
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token, get_jwt_identity,
                                 jwt_required)
+from ipdb import set_trace
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
@@ -50,4 +51,6 @@ def signup():
 def get_user():
     user: UserModel = get_jwt_identity()
 
-    return jsonify(user), HTTPStatus.OK
+    # print(user)
+
+    return user, HTTPStatus.OK

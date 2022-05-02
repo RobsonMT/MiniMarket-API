@@ -1,41 +1,80 @@
-
 from http import HTTPStatus
-from attr import Attribute
 from flask import jsonify, request
-from flask_jwt_extended import (create_access_token, get_jwt_identity, jwt_required)
-from app.exceptions import IdNotFound, FilterError
-from app.models.user_model import UserModel
-from app.services.query_service import get_by_id_svc, create_svc, filter_svc
-from app.models import AddressModel, EstablishmentModel
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from psycopg2.errors import NotNullViolation
+from sqlalchemy.exc import IntegrityError
 
+from app.decorators import validate
+from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser, FilterError
+from app.models import AddressModel, EstablishmentModel, UserModel
+from app.services.query_service import create_svc, get_by_id_svc, update_svc, filter_svc
+
+@jwt_required()
 def post_establishment():
     data = request.get_json()
-    address = data.pop('address')
-    
+    data["user_id"] = get_jwt_identity()["id"]
+    address = data.pop("address")
+
+    data["address_id"] = AddressModel.query.filter_by(
+        number=address.get("number")
+    ).first()
+
+    establishment = EstablishmentModel.query.filter_by(cnpj=data.get("cnpj")).first()
+
+    if data["address_id"] != None:
+        return {"error": "address already registered"}, HTTPStatus.BAD_REQUEST
+
+    if establishment != None:
+        return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
+
     try:
+        data["name"] = data["name"].title()
         create_svc(AddressModel, address)
-        
-        data['address_id'] = AddressModel.query.filter_by(zip_code=address.get('zip_code')).first().id
-        
+    except IntegrityError as err:
+        if type(err.orig) == NotNullViolation:
+            return {"error": "Field(s) Missing on address"}, HTTPStatus.BAD_REQUEST
+
+    data["address_id"] = (
+        AddressModel.query.filter_by(number=address.get("number")).first().id
+    )
+
+    try:
         new_establishment = create_svc(EstablishmentModel, data)
+    except IntegrityError as err:
+        if type(err.orig) == NotNullViolation:
+            return {
+                "error": "Field(s) Missing on establishment"
+            }, HTTPStatus.BAD_REQUEST
 
-        return new_establishment, HTTPStatus.CREATED
-    except:
-        ...
+    return jsonify(new_establishment), HTTPStatus.CREATED
 
+
+@jwt_required()
+@validate(EstablishmentModel)
 def patch_establishment(id):
-    """
-    rota protegida: verifica se o dono da aplicação tem o establishment com base no id
-    arquivar establishmente
-    """
-    return "Rota patch establishment"
+    user_id = get_jwt_identity()["id"]
+    data = request.get_json()
+
+    try:
+        search_establishment = get_by_id_svc(model=EstablishmentModel, id=id)
+        if user_id != 1 and search_establishment.user_id != user_id:
+            raise UnauthorizedUser
+
+        update = update_svc(EstablishmentModel, id, data)
+        return jsonify(update)
+
+    except IdNotFound as err:
+        return err.args[0], err.args[1]
+
+    except UnauthorizedUser:
+        return {"Error": "Unauthorized user"}, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()
 def get_all_establishments():
     user_email = get_jwt_identity()["email"]
     establishments = (
-        UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
+        UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     if establishments == []:
         return {"error": "You don't have any establishment"}, HTTPStatus.BAD_REQUEST
@@ -46,7 +85,7 @@ def get_all_establishments():
 def get_one_establishment(id):
     user_email = get_jwt_identity()["email"]
     establishments = (
-        UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
+        UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     try:
         establishment = get_by_id_svc(model=EstablishmentModel, id=id)
@@ -59,24 +98,18 @@ def get_one_establishment(id):
 
 
 @jwt_required()
-def get_establishment_by_name():
-    data = request.get_json()
-    if len(data) != 1:
-        return {"error": "Invalid number of fields"}, HTTPStatus.BAD_REQUEST
-    try:
-        name = data["name"]
-    except:
-        return {"error": "The field passed is invalid"}, HTTPStatus.BAD_REQUEST
+def get_establishment_by_name(name):
+    name = name.title()
     user_email = get_jwt_identity()["email"]
     establishments = (
-        UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
+        UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     try:
         establishment = EstablishmentModel.query.filter(
             EstablishmentModel.name.like(name)
         ).one()
     except:
-        return {"error": f"Name {data['name']} not found"}, HTTPStatus.BAD_REQUEST
+        return {"error": f"Name {name} not found"}, HTTPStatus.BAD_REQUEST
     establishments = [place for place in establishments if place == establishment]
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST

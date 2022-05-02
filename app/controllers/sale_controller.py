@@ -1,18 +1,24 @@
 from http import HTTPStatus
 
 from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from sqlalchemy.exc import IntegrityError
 
+from app.exceptions.generic_exception import UnauthorizedUser
 from app.models.sale_model import SaleModel
 from app.services import query_service
 
 
+@jwt_required()
 def post_sale():
-    # obj_body = request.get_json()
-    # try:
-    # query_service.create_svc(SaleModel, obj_body)
-    # except:
-    # return {"error": "sale already registered"}, HTTPStatus.CONFLICT
-    return "ROTA post (create) SALE"
+    data = request.get_json()
+    try:
+        query_service.create_svc(SaleModel, data)
+        return jsonify(data), 201
+    except UnauthorizedUser:
+        return {"error": "Unauthorized user."}, 401
+    except IntegrityError:
+        return {"error": "Sale (ID) already exists."}, 409
 
 
 def patch_sale(id):
@@ -29,9 +35,10 @@ def get_sales():
     return "ROTA get (all) SALES"
 
 
+@jwt_required()
 def get_sale_by_id(id):
     try:
-        query_service.get_by_id_svc(SaleModel, id)
+        sale = query_service.get_by_id_svc(SaleModel, id)
     except:
-        return {"error": "id doesn't exist"}, HTTPStatus.BAD_REQUEST
-    return "ROTA get_sale_by_id SALE"
+        return {"error": "Sale (ID) doesn't exist"}, HTTPStatus.BAD_REQUEST
+    return jsonify(sale), 200
