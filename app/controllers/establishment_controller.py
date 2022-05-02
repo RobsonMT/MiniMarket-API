@@ -116,7 +116,7 @@ def get_one_establishment(id):
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
     return {
-        "establishment": {
+        "data": {
             "id": establishments[0].id,
             "name": establishments[0].name,
             "cnpj": establishments[0].cnpj,
@@ -145,4 +145,4 @@ def get_establishment_by_name(name):
     establishments = [place for place in establishments if place == establishment]
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
-    return {"establishment": establishments[0]}, HTTPStatus.OK
+    return jsonify(establishments[0]), HTTPStatus.OK
