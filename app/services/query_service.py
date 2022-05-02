@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
 from flask import current_app
-from sqlalchemy.orm import Session
-from app.configs.database import db
 from app.exceptions import IdNotFound, TableEmpty, FilterError
 
 
