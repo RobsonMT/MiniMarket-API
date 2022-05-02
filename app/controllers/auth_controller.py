@@ -9,21 +9,29 @@ from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
 from app.models import UserModel
+from app.exceptions import DisabledAccount, AttributeTypeError
 
 
 def signin():
     data = request.get_json()
     session: Session = db.session
-
     user = session.query(UserModel).filter_by(email=data["email"]).first()
+    
+    try:
+        if not user or not user.verify_password(data["password"]):
+            raise AttributeTypeError
 
-    if not user or not user.verify_password(data["password"]):
-        return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
+        if user.is_activate == False:
+            raise DisabledAccount
 
-    token = create_access_token(user, expires_delta=timedelta(minutes=100))
+        token = create_access_token(user, expires_delta=timedelta(minutes=100))
+        return {"access_token": "{}".format(token)}, HTTPStatus.OK
 
-    return {"access_token": "{}".format(token)}, HTTPStatus.OK
-
+    except DisabledAccount:
+            return {"Error": "Your account is deactivated"}, HTTPStatus.UNAUTHORIZED
+        
+    except AttributeTypeError:
+            return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
 
 def signup():
     data = request.get_json()
@@ -50,6 +58,5 @@ def signup():
 def get_user():
     user: UserModel = get_jwt_identity()
 
-    # print(user)
 
     return user, HTTPStatus.OK
