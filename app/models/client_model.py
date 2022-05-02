@@ -10,7 +10,7 @@ from app.configs.database import db
 @dataclass
 class ClientModel(db.Model):
 
-    # id: int
+    id: int
     name: str
     avatar: str
     contact: str
