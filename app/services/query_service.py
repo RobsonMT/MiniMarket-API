@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
 from flask import current_app
-from sqlalchemy.orm import Session
-from app.configs.database import db
 from app.exceptions import IdNotFound, TableEmpty, FilterError
 
 
@@ -26,13 +24,13 @@ def get_by_id_svc(model, id):
 
 def filter_svc(Model, fields):
     # fields in Object
-    session: Session = db.session
-    for field in fields:
-        f = getattr(Model, field)
-        found = session.query(Model).filter(f == fields.get(field)).first()
-        if not found:
-            raise FilterError(f"campo {field.upper()} not found")
-    return found
+    session = current_app.db.session
+    
+    founds  = session.query(Model).filter_by(**fields).all()
+    if founds:
+        return founds
+    else:
+        raise FilterError(f"data not found")
     
 
 def create_svc(Model, data):
