@@ -1,13 +1,17 @@
 from http import HTTPStatus
+
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from psycopg2.errors import NotNullViolation
 from sqlalchemy.exc import IntegrityError
 
 from app.decorators import validate
-from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser, FilterError
+from app.exceptions.generic_exception import (FilterError, IdNotFound,
+                                              UnauthorizedUser)
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import create_svc, get_by_id_svc, update_svc, filter_svc
+from app.services.query_service import (create_svc, filter_svc, get_by_id_svc,
+                                        update_svc)
+
 
 @jwt_required()
 def post_establishment():
@@ -78,7 +82,24 @@ def get_all_establishments():
     )
     if establishments == []:
         return {"error": "You don't have any establishment"}, HTTPStatus.BAD_REQUEST
-    return {"establishments": establishments}, HTTPStatus.OK
+
+    serialized_establishments = []
+
+    for estab in establishments:
+        serialized_establishments.append(
+            {
+                "id": estab.id,
+                "name": estab.name,
+                "cnpj": estab.cnpj,
+                "contact": estab.contact,
+                "url_logo": estab.url_logo,
+                "user_id": estab.user_id,
+                "address": estab.address,
+                "clients": [client.name for client in estab.clients],
+            }
+        )
+
+    return {"establishments": serialized_establishments}, HTTPStatus.OK
 
 
 @jwt_required()
@@ -94,7 +115,18 @@ def get_one_establishment(id):
     establishments = [place for place in establishments if place == establishment]
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
-    return {"establishment": establishments[0]}, HTTPStatus.OK
+    return {
+        "data": {
+            "id": establishments[0].id,
+            "name": establishments[0].name,
+            "cnpj": establishments[0].cnpj,
+            "contact": establishments[0].contact,
+            "url_logo": establishments[0].url_logo,
+            "user_id": establishments[0].user_id,
+            "address": establishments[0].address,
+            "clients": [client.name for client in establishments[0].clients],
+        }
+    }, HTTPStatus.OK
 
 
 @jwt_required()
@@ -113,4 +145,4 @@ def get_establishment_by_name(name):
     establishments = [place for place in establishments if place == establishment]
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
-    return {"establishment": establishments[0]}, HTTPStatus.OK
+    return jsonify(establishments[0]), HTTPStatus.OK

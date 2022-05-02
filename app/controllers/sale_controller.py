@@ -4,8 +4,8 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
 
-from app.exceptions import UnauthorizedUser, FilterError
-from app.models import SaleModel, AddressModel
+from app.exceptions import FilterError, UnauthorizedUser
+from app.models import AddressModel, SaleModel
 from app.services import query_service
 
 
@@ -29,9 +29,10 @@ def patch_sale(id):
     # return {"error": "key doesn't exist"}, HTTPStatus.BAD_REQUEST
     return "ROTA patch SALE"
 
+
 @jwt_required()
 def get_sales(client_id):
-    
+
     data = {"client_id": client_id, "paid_date": None}
     try:
         sales_found = query_service.filter_svc(SaleModel, data)
