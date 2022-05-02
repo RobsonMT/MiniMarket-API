@@ -1,9 +1,9 @@
 from http import HTTPStatus
 
 from flask import current_app, jsonify
-from sqlalchemy import and_, or_, create_engine
-from sqlalchemy.orm import sessionmaker
-from app.exceptions import IdNotFound, TableEmpty
+from sqlalchemy.orm import Session
+from app.configs.database import db
+from app.exceptions import IdNotFound, TableEmpty, FilterError
 
 
 def get_all_svc(Model, order=None):
@@ -24,34 +24,16 @@ def get_by_id_svc(model, id):
         raise IdNotFound({"error": f"id {id} not found"}, HTTPStatus.BAD_REQUEST)
     return response
 
-from ipdb import set_trace
-
-def filter_svc(Model, data):
+def filter_svc(Model, fields):
+    # fields in Object
+    session: Session = db.session
+    for field in fields:
+        f = getattr(Model, field)
+        found = session.query(Model).filter(f == fields.get(field)).first()
+        if not found:
+            raise FilterError(f"campo {field.upper()} not found")
+    return found
     
-    #session = current_app.db.session
-    session_maker = sessionmaker(bind=current_app)
-    session = session_maker()
-    
-    filters = []
-    set_trace()
-    for col in data:
-        sqlalchemybinaryexpression = (getattr(Model, col) == data[col])
-        filters.append(sqlalchemybinaryexpression)
-    set_trace()  
-    #query = Model.__table__.select().where(and_(*filters))
-    #query= session.query(Model).filter(**data)
-    # query = session.query(Model)
-    # for attr,value in data.iteritems():
-    #     query = query.filter( getattr(Model,attr)==value )
-    
-    # q = session.query(Model)
-    # for attr, value in data.items():
-    #     q = q.filter(getattr(Model, attr).like("%%%s%%" % value))
-    
-    query = session.query(Model).filter_by(name = 'JulioPereira').first()
-    
-    set_trace()
-    return ""
 
 def create_svc(Model, data):
 

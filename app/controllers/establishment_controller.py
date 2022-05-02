@@ -1,10 +1,11 @@
 
 from http import HTTPStatus
+from attr import Attribute
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token, get_jwt_identity, jwt_required)
-from app.exceptions.generic_exception import IdNotFound
+from app.exceptions import IdNotFound, FilterError
 from app.models.user_model import UserModel
-from app.services.query_service import get_by_id_svc, create_svc
+from app.services.query_service import get_by_id_svc, create_svc, filter_svc
 from app.models import AddressModel, EstablishmentModel
 
 def post_establishment():

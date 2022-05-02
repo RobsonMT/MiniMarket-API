@@ -71,13 +71,3 @@ def get_by_id(id):
     except IdNotFound as err:
         return err.args[0], err.args[1]
     return jsonify(user), HTTPStatus.OK
-
-def get_by_filter():
-    data = request.get_json()
-    
-    try:
-        user_found = filter_svc(UserModel, data)
-        
-        return user_found, HTTPStatus.FOUND
-    except:
-        pass
