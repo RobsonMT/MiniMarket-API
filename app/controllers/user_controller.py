@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import jsonify, request
 from flask_jwt_extended import jwt_required
 
-from app.decorators import validate_fields
+from app.decorators import validate, validate_fields
 from app.exceptions import (
     CellphoneAlrealyExists, 
     EmailAlrealyExists,
