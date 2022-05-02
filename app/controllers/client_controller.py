@@ -16,7 +16,6 @@ def post_client():
     data = request.get_json()
 
     try:
-
         new_client = create_svc(ClientModel, data)
 
         return new_client, HTTPStatus.CREATED
