@@ -29,13 +29,12 @@ def patch_sale(id):
     # return {"error": "key doesn't exist"}, HTTPStatus.BAD_REQUEST
     return "ROTA patch SALE"
 
-from ipdb import set_trace
-
+@jwt_required()
 def get_sales(client_id):
     
     data = {"client_id": client_id, "paid_date": None}
     try:
-        sales_found = query_service.filter_svc(AddressModel, data)
+        sales_found = query_service.filter_svc(SaleModel, data)
         return jsonify(sales_found), HTTPStatus.OK
     except FilterError:
         return {"message": "No sales on client"}, HTTPStatus.NOT_FOUND
