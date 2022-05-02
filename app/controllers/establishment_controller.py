@@ -30,6 +30,7 @@ def post_establishment():
         return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
 
     try:
+        data["name"] = data["name"].title()
         create_svc(AddressModel, address)
     except IntegrityError as err:
         if type(err.orig) == NotNullViolation:
@@ -47,7 +48,7 @@ def post_establishment():
                 "error": "Field(s) Missing on establishment"
             }, HTTPStatus.BAD_REQUEST
 
-    return new_establishment, HTTPStatus.CREATED
+    return jsonify(new_establishment), HTTPStatus.CREATED
 
 
 @jwt_required()
@@ -75,7 +76,7 @@ def patch_establishment(id):
 def get_all_establishments():
     user_email = get_jwt_identity()["email"]
     establishments = (
-        UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
+        UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     if establishments == []:
         return {"error": "You don't have any establishment"}, HTTPStatus.BAD_REQUEST
@@ -86,7 +87,7 @@ def get_all_establishments():
 def get_one_establishment(id):
     user_email = get_jwt_identity()["email"]
     establishments = (
-        UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
+        UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     try:
         establishment = get_by_id_svc(model=EstablishmentModel, id=id)
@@ -103,7 +104,7 @@ def get_establishment_by_name(name):
     name = name.title()
     user_email = get_jwt_identity()["email"]
     establishments = (
-        UserModel.query.filter(UserModel.email.like(user_email)).one().establishment
+        UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     try:
         establishment = EstablishmentModel.query.filter(
