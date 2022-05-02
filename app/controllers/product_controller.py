@@ -1,16 +1,17 @@
 from http import HTTPStatus
 
-from flask import jsonify, request
-from flask_jwt_extended import jwt_required
-from psycopg2.errors import UniqueViolation
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.session import Session
-
 from app.configs.database import db
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.product_categories import ProductCategory
 from app.services.query_service import create_svc
+from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from ipdb import set_trace
+from psycopg2.errors import UniqueViolation
+from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.session import Session
 
 
 def create_one_product() -> dict:
@@ -49,10 +50,41 @@ def get_all_products(establishment_id: int) -> dict:
 
 @jwt_required()
 def get_product_by_id(establishment_id: int, product_id: int) -> dict:
-    ...
+    product = ProductModel.query.filter(
+        and_(
+            ProductModel.establieshment_id == establishment_id,
+            ProductModel.id == product_id,
+        )
+    ).one()
+
+    return jsonify({"data": product}), HTTPStatus.OK
 
 
 @jwt_required()
+def get_product_by_caractere(establishment_id: int, caractere: str) -> dict:
+    search = "{}%".format(caractere)
+
+    product = ProductModel.query.filter(
+        ProductModel.establieshment_id == establishment_id,
+        and_(ProductModel.name.ilike(search)),
+    ).all()
+
+    return jsonify(product), HTTPStatus.OK
+
+
+@jwt_required()
+def get_product_by_query_parameters(establishment_id: int) -> dict:
+    args = request.args
+    name = args.get("name", default="", type=str)
+
+    product = ProductModel.query.filter(
+        ProductModel.establieshment_id == establishment_id,
+        and_(ProductModel.name == name),
+    ).all()
+
+    return jsonify(product), HTTPStatus.OK
+
+
 def patch_product(id: int) -> dict:
     """
     rota protegida: verifica se o dono da aplicação tem o producte com base no id
