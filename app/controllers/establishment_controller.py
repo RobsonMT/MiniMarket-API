@@ -8,13 +8,14 @@ from sqlalchemy.exc import IntegrityError
 from app.decorators import validate
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import create_svc, get_by_id_svc, update_svc
+from app.services.query_service import create_svc, get_by_id_svc, update_svc, get_all_svc
 
 
 @jwt_required()
 def post_establishment():
     data = request.get_json()
     data["user_id"] = get_jwt_identity()["id"]
+    data["name"] = data["name"].title()
     address = data.pop("address")
 
     data["address_id"] = AddressModel.query.filter_by(
@@ -30,7 +31,6 @@ def post_establishment():
         return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
 
     try:
-        data["name"] = data["name"].title()
         create_svc(AddressModel, address)
     except IntegrityError as err:
         if type(err.orig) == NotNullViolation:
@@ -75,6 +75,10 @@ def patch_establishment(id):
 @jwt_required()
 def get_all_establishments():
     user_email = get_jwt_identity()["email"]
+    user_id = get_jwt_identity()['id']
+    if user_id == 1:
+        return jsonify(get_all_svc(EstablishmentModel))
+
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
@@ -86,14 +90,21 @@ def get_all_establishments():
 @jwt_required()
 def get_one_establishment(id):
     user_email = get_jwt_identity()["email"]
+    user_id = get_jwt_identity()['id']
+
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
     try:
         establishment = get_by_id_svc(model=EstablishmentModel, id=id)
+        if user_id == 1:
+            return jsonify(establishment)
+
     except IdNotFound as err:
         return err.args[0], err.args[1]
+
     establishments = [place for place in establishments if place == establishment]
+    
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
     return {"establishment": establishments[0]}, HTTPStatus.OK
@@ -103,6 +114,8 @@ def get_one_establishment(id):
 def get_establishment_by_name(name):
     name = name.title()
     user_email = get_jwt_identity()["email"]
+    user_id = get_jwt_identity()['id']
+
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
@@ -110,9 +123,11 @@ def get_establishment_by_name(name):
         establishment = EstablishmentModel.query.filter(
             EstablishmentModel.name.like(name)
         ).one()
+        if user_id == 1:
+            return {"establishment": establishment}, HTTPStatus.OK
     except:
         return {"error": f"Name {name} not found"}, HTTPStatus.BAD_REQUEST
     establishments = [place for place in establishments if place == establishment]
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
-    return {"establishment": establishments[0]}, HTTPStatus.OK
+    return {"establishment": establishments}, HTTPStatus.OK
