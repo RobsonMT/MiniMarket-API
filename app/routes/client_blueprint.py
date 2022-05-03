@@ -11,4 +11,6 @@ bp_clients.get("/establishment/<int:establishment_id>/client")(
 bp_clients.get("/establishment/<int:establishment_id>/client/<int:client_id>")(
     client_controller.get_one_client
 )
-bp_clients.patch("/client/<int:id>")(client_controller.patch_client)
+bp_clients.patch("/establishment/<int:establishment_id>/client/<int:client_id>")(
+    client_controller.patch_client
+)
