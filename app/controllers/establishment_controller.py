@@ -19,9 +19,7 @@ from app.services.query_service import (
 @jwt_required()
 def post_establishment():
     data = request.get_json()
-    data["user_id"] = get_jwt_identity()[
-        "id"
-    ]  # Pegar id da url (usar esse apenas para validar se é admin)
+    data["user_id"] = get_jwt_identity()["id"]  # Pegar id da url (usar esse apenas para validar se é admin)
     data["name"] = data["name"].title()
     address = data.pop("address")  # validar todo o objeto, não apenas o numero
 

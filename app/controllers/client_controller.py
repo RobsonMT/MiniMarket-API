@@ -1,27 +1,46 @@
 from http import HTTPStatus
 
-from flask import jsonify, request
+from flask import  jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-
-from app.exceptions.generic_exception import IdNotFound
+from ipdb import set_trace
+from app.exceptions import IdNotFound, CellphoneAlrealyExists, NameAlreadyExists, UnauthorizedUser
 from app.models import ClientModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.user_model import UserModel
-from app.services.query_service import create_svc, get_by_id_svc
-
+from app.services.query_service import create_svc, get_by_id_svc, filter_svc
+from app.decorators import validate
 
 @jwt_required()
+@validate(ClientModel)
 def post_client():
-
+    user_id = get_jwt_identity()["id"]
     data = request.get_json()
-
     try:
+        search_for_duplicate_name = ClientModel.query.filter_by(name=data["name"]).all()
+        search_for_duplicate_contact = ClientModel.query.filter_by(contact=data["contact"]).all()
+    
+        if len(search_for_duplicate_contact) > 0:
+            raise CellphoneAlrealyExists
+
+        if len(search_for_duplicate_name) > 0:
+            raise NameAlreadyExists
+
+        establishments_by_user = EstablishmentModel.query.filter_by(user_id=user_id).all()
+        establishments_ids = [establishment.id for establishment in establishments_by_user]
+        
+        if data["establishment_id"] not in establishments_ids:
+            raise UnauthorizedUser
+
         new_client = create_svc(ClientModel, data)
+        return jsonify(new_client), HTTPStatus.CREATED
+    except CellphoneAlrealyExists:
+        return {"Error": "Cellphone alreadyExists"}, 409
 
-        return new_client, HTTPStatus.CREATED
-    except:
-        ...
-
+    except NameAlreadyExists:
+        return {"Error": "Name already Exists"}, 409
+    
+    except UnauthorizedUser:
+        return {"Error": f"You don't have an establishment with id {data['establishment_id']}"}, 401
 
 @jwt_required()
 def patch_client(id):

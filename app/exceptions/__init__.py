@@ -5,3 +5,4 @@ from .generic_exception import *
 from .product_exception import *
 from .sale_exception import *
 from .user_exception import *
+from .client_exception import *

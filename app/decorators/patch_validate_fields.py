@@ -15,7 +15,7 @@ def validate(Model):
             fields = {
                 c.name
                 for c in Model.__table__.c
-                if c.name != "id" and c.default == None
+                if c.name != "id" 
             }
             wrong_key = set(data.keys()).difference(fields)
             try:
