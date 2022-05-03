@@ -1,11 +1,12 @@
 from http import HTTPStatus
+from http.client import UNAUTHORIZED
 
 from app.configs.database import db
 from app.exceptions import (
     FilterError,
     UnauthorizedUser,
 )
-from flask import jsonify, request, session
+from flask import current_app, jsonify, request, session
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from psycopg2.errors import UniqueViolation
 from sqlalchemy.exc import IntegrityError
@@ -176,31 +177,73 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
     else:
         return jsonify(output), HTTPStatus.OK
 
-
+@jwt_required()
 def patch_product(establishment_id: int, product_id: int) -> dict:
     data = request.get_json()
+    category = data.pop('categories')
     session: Session = db.session
     query = session.query(ProductModel)
+    user = get_jwt_identity()
+
+    
+    establishment = EstablishmentModel.query.filter(and_(EstablishmentModel.id == establishment_id, EstablishmentModel.user_id == user['id'])).one_or_none()
+
+    product = query.filter(and_(ProductModel.id == product_id, ProductModel.establieshment_id == establishment_id)).all()
 
     try:
-        products = jsonify(
-            query.filter_by(establieshment_id=establishment_id, id=product_id).first()
-        )
-        val_prod = products.get_json()
+        if not establishment:
+            raise UnauthorizedUser
+        if not product:
+            raise IndexError
 
-        if val_prod:
-            for key, value in val_prod.items():
-                if key == "establieshment_id":
-                    establishment_product_id = value
-        else:
-            raise IdNotFound
+        # update = update_svc(ProductModel, product_id, data) 
 
-        if establishment_product_id == establishment_id:
-            update = update_svc(ProductModel, product_id, data)
+        response = get_by_id_svc(ProductModel, product_id)
 
-            return jsonify(update), 200
+        for key, value in data.items():
+            setattr(response, key, value)
 
-    except IdNotFound:
-        return jsonify(error="Product ID doesn't exists."), 400
-    except IntegrityError:
-        return jsonify(error="Product ID already exists."), 400
+        if not response:
+            raise IdNotFound({"error": f"id {id} not found"}, HTTPStatus.BAD_REQUEST)
+
+        session.add(response)
+        session.commit()
+
+
+        print('*' * 10)
+
+
+        # response = serialize_products_svc(list(update.__dict__))
+        print(response)
+
+
+    except IndexError:
+        return {'error': 'error'}
+    except UnauthorizedUser:
+        return {'error': 'Unauthorized user'}
+
+    print('*' * 10)
+    return jsonify(response)
+
+    # try:
+    #     products = jsonify(
+    #         query.filter_by(establieshment_id=establishment_id, id=product_id).first()
+    #     )
+    #     val_prod = products.get_json()
+
+    #     if val_prod:
+    #         for key, value in val_prod.items():
+    #             if key == "establieshment_id":
+    #                 establishment_product_id = value
+    #     else:
+    #         raise IdNotFound
+
+    #     if establishment_product_id == establishment_id:
+    #         update = update_svc(ProductModel, product_id, data)
+
+    #         return jsonify(update), 200
+
+    # except IdNotFound:
+    #     return jsonify(error="Product ID doesn't exists."), 400
+    # except IntegrityError:
+    #     return jsonify(error="Product ID already exists."), 400
