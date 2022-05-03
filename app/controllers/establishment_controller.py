@@ -6,19 +6,24 @@ from psycopg2.errors import NotNullViolation
 from sqlalchemy.exc import IntegrityError
 
 from app.decorators import validate
-from app.exceptions.generic_exception import (FilterError, IdNotFound,
-                                              UnauthorizedUser)
+from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import (create_svc, filter_svc, get_by_id_svc,
-                                        update_svc)
+from app.services.query_service import (
+    create_svc,
+    get_all_svc,
+    get_by_id_svc,
+    update_svc,
+)
 
 
 @jwt_required()
 def post_establishment():
     data = request.get_json()
-    data["user_id"] = get_jwt_identity()["id"] # Pegar id da url (usar esse apenas para validar se é admin)
+    data["user_id"] = get_jwt_identity()[
+        "id"
+    ]  # Pegar id da url (usar esse apenas para validar se é admin)
     data["name"] = data["name"].title()
-    address = data.pop("address") #validar todo o objeto, não apenas o numero
+    address = data.pop("address")  # validar todo o objeto, não apenas o numero
 
     data["address_id"] = AddressModel.query.filter_by(
         number=address.get("number")
@@ -77,7 +82,7 @@ def patch_establishment(id):
 @jwt_required()
 def get_all_establishments():
     user_email = get_jwt_identity()["email"]
-    user_id = get_jwt_identity()['id']
+    user_id = get_jwt_identity()["id"]
     if user_id == 1:
         return jsonify(get_all_svc(EstablishmentModel))
 
@@ -109,7 +114,7 @@ def get_all_establishments():
 @jwt_required()
 def get_one_establishment(id):
     user_email = get_jwt_identity()["email"]
-    user_id = get_jwt_identity()['id']
+    user_id = get_jwt_identity()["id"]
 
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
@@ -123,7 +128,7 @@ def get_one_establishment(id):
         return err.args[0], err.args[1]
 
     establishments = [place for place in establishments if place == establishment]
-    
+
     if establishments == []:
         return {"error": "You do not own this establishment"}, HTTPStatus.BAD_REQUEST
     return {
@@ -144,7 +149,7 @@ def get_one_establishment(id):
 def get_establishment_by_name(name):
     name = name.title()
     user_email = get_jwt_identity()["email"]
-    user_id = get_jwt_identity()['id']
+    user_id = get_jwt_identity()["id"]
 
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments

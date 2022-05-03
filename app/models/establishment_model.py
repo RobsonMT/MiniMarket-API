@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from enum import unique
-from itertools import product
 
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
