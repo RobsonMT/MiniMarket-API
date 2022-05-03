@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 from sqlalchemy import Column, ForeignKey, Integer
-from sqlalchemy.orm import validates
 
 from app.configs.database import db
 

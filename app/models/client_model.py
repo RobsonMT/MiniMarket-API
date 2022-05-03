@@ -22,18 +22,15 @@ class ClientModel(db.Model):
 
     __tablename__ = "clients"
 
-    # nullable tava como( True === pode ser nulo) => troquei para (False === not null)
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     avatar = Column(String)
     contact = Column(String, nullable=False, unique=True)
-    pay_day = Column(Integer, nullable=False)  # alterar no banco v
-    is_dobtor = Column(Boolean, nullable=False, default=False)  # default False v
-    is_late = Column(Boolean, nullable=False, default=False)  # default False v
-    is_activate = Column(Boolean, nullable=False, default=True)  # default True v
-    establishment_id = Column(
-        Integer, ForeignKey("establishments.id"), nullable=False, unique=True
-    )  # nome errado v
+    pay_day = Column(Integer, nullable=False)
+    is_dobtor = Column(Boolean, nullable=False, default=False)
+    is_late = Column(Boolean, nullable=False, default=False)
+    is_activate = Column(Boolean, nullable=False, default=True)
+    establishment_id = Column(Integer, ForeignKey("establishments.id"), nullable=False)
 
     sales = relationship(
         "SaleModel", backref=backref("clients", uselist=True), uselist=False

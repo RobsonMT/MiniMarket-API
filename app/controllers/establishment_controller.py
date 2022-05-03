@@ -7,7 +7,8 @@ from sqlalchemy.exc import IntegrityError
 from app.decorators import validate
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser, FilterError
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import create_svc, get_by_id_svc, update_svc, filter_svc
+from app.services.query_service import create_svc, get_by_id_svc, update_svc
+
 
 @jwt_required()
 def post_establishment():

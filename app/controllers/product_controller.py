@@ -1,27 +1,50 @@
 from http import HTTPStatus
 
 from app.configs.database import db
+from app.exceptions import (
+    FilterError,
+    UnauthorizedUser,
+)
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
+from app.models.establishment_model import EstablishmentModel
 from app.models.product_categories import ProductCategory
+from app.services import serialize_products_svc
 from app.services.query_service import create_svc
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from ipdb import set_trace
 from psycopg2.errors import UniqueViolation
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.session import Session
+from sqlalchemy.orm import Session
+from flask_sqlalchemy import BaseQuery, Pagination
 
 
+@jwt_required()
 def create_one_product() -> dict:
-    data = request.get_json()
+    user = get_jwt_identity()
     session: Session = db.session
 
+    data = request.get_json()
     categories = data.pop("categories")
 
+    establishment = EstablishmentModel.query.filter(
+        and_(
+            EstablishmentModel.id == data.get("establieshment_id"),
+            EstablishmentModel.user_id == user["id"],
+        ),
+    ).one_or_none()
+
     try:
+        if not establishment:
+            raise UnauthorizedUser
+
         product = create_svc(ProductModel, data)
+    except UnauthorizedUser:
+        session.rollback()
+        return {
+            "error": "you need to be the owner of the establishment to register a product."
+        }, HTTPStatus.UNAUTHORIZED
     except IntegrityError as exc:
         isinstance(exc.orig, UniqueViolation)
         session.rollback()
@@ -42,47 +65,107 @@ def create_one_product() -> dict:
 
 @jwt_required()
 def get_all_products(establishment_id: int) -> dict:
-    products = ProductModel.query.filter_by(establieshment_id=establishment_id).all()
-    if products == []:
-        return {"error": "You don't have any products"}, HTTPStatus.BAD_REQUEST
-    return {"products": products}, HTTPStatus.OK
+    user = get_jwt_identity()
+    session: Session = db.session
+
+    base_query: BaseQuery = session.query(ProductModel)
+    page = request.args.get("page", type=int)
+    per_page = request.args.get("per_page", type=int)
+
+    establishment = EstablishmentModel.query.filter(
+        and_(
+            EstablishmentModel.id == establishment_id,
+            EstablishmentModel.user_id == user["id"],
+        ),
+    ).one_or_none()
+
+    if page and per_page:
+        products: Pagination = (
+            base_query.order_by(ProductModel.id)
+            .paginate(page=page, per_page=per_page)
+            .items
+        )
+
+    else:
+        products = ProductModel.query.filter_by(
+            establieshment_id=establishment_id
+        ).all()
+
+    try:
+        if not establishment:
+            raise UnauthorizedUser
+
+        if not products:
+            raise FilterError
+
+        response = serialize_products_svc(products)
+
+        return {"data": response}, HTTPStatus.OK
+    except UnauthorizedUser:
+        return {
+            "error": "you need to be the owner of the establishment to register a product."
+        }, HTTPStatus.UNAUTHORIZED
+    except FilterError:
+        return {"data": "You don't have any products"}, HTTPStatus.BAD_REQUEST
 
 
 @jwt_required()
 def get_product_by_id(establishment_id: int, product_id: int) -> dict:
-    product = ProductModel.query.filter(
-        and_(
-            ProductModel.establieshment_id == establishment_id,
-            ProductModel.id == product_id,
-        )
-    ).one()
-
-    return jsonify({"data": product}), HTTPStatus.OK
-
-
-@jwt_required()
-def get_product_by_caractere(establishment_id: int, caractere: str) -> dict:
-    search = "{}%".format(caractere)
-
-    product = ProductModel.query.filter(
-        ProductModel.establieshment_id == establishment_id,
-        and_(ProductModel.name.ilike(search)),
-    ).all()
-
-    return jsonify(product), HTTPStatus.OK
+    pass
 
 
 @jwt_required()
 def get_product_by_query_parameters(establishment_id: int) -> dict:
+    user = get_jwt_identity()
     args = request.args
-    name = args.get("name", default="", type=str)
 
-    product = ProductModel.query.filter(
+    category = args.get("category", default="", type=str)
+
+    establishment = EstablishmentModel.query.filter(
+        and_(
+            EstablishmentModel.id == establishment_id,
+            EstablishmentModel.user_id == user["id"],
+        ),
+    ).one_or_none()
+
+    products = ProductModel.query.filter(
         ProductModel.establieshment_id == establishment_id,
-        and_(ProductModel.name == name),
     ).all()
 
-    return jsonify(product), HTTPStatus.OK
+    output = []
+
+    for product in products:
+        for c in product.categories:
+            if category in c.name:
+                product_data = {
+                    "id": product.id,
+                    "name": product.name,
+                    "description": product.description,
+                    "sale_price": product.sale_price,
+                    "cost_price": product.cost_price,
+                    "unit_type": product.unit_type,
+                    "url_img": product.url_img,
+                    "establieshment_id": product.establieshment_id,
+                    "categories": [c.name for c in product.categories],
+                }
+
+                output.append(product_data)
+
+    try:
+        if not establishment:
+            raise UnauthorizedUser
+
+        if not output:
+            raise FilterError
+
+    except UnauthorizedUser:
+        return {
+            "error": "you need to be the owner of the establishment to register a product."
+        }, HTTPStatus.UNAUTHORIZED
+    except FilterError:
+        return {"error": "product not found"}, HTTPStatus.NOT_FOUND
+    else:
+        return jsonify(output), HTTPStatus.OK
 
 
 def patch_product(id: int) -> dict:

@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from datetime import datetime as dt
 
-from sqlalchemy import Column, DateTime, Integer, Numeric, String
-from sqlalchemy.orm import validates
+from sqlalchemy import Column, Integer, String
 
 from app.configs.database import db
 

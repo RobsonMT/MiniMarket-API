@@ -2,8 +2,7 @@ from datetime import timedelta
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import (create_access_token, get_jwt_identity,
-                                jwt_required)
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from ipdb import set_trace
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
@@ -26,6 +25,7 @@ def signin():
     return {"access_token": "{}".format(token)}, HTTPStatus.OK
 
 
+# Proteger
 def signup():
     data = request.get_json()
     session: Session = db.session
