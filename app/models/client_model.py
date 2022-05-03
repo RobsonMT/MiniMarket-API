@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from email.policy import default
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
 
 from app.configs.database import db

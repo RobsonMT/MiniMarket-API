@@ -5,6 +5,14 @@ from app.exceptions import (
     FilterError,
     UnauthorizedUser,
 )
+from flask import jsonify, request, session
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from psycopg2.errors import UniqueViolation
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.session import Session
+
+from app.configs.database import db
+from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
@@ -18,6 +26,7 @@ from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from flask_sqlalchemy import BaseQuery, Pagination
+from app.services.query_service import create_svc, filter_svc, get_by_id_svc, update_svc
 
 
 @jwt_required()
@@ -168,9 +177,30 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
         return jsonify(output), HTTPStatus.OK
 
 
-def patch_product(id: int) -> dict:
-    """
-    rota protegida: verifica se o dono da aplicação tem o producte com base no id
-    arquivar producte
-    """
-    return "Rota patch product"
+def patch_product(establishment_id: int, product_id: int) -> dict:
+    data = request.get_json()
+    session: Session = db.session
+    query = session.query(ProductModel)
+
+    try:
+        products = jsonify(
+            query.filter_by(establieshment_id=establishment_id, id=product_id).first()
+        )
+        val_prod = products.get_json()
+
+        if val_prod:
+            for key, value in val_prod.items():
+                if key == "establieshment_id":
+                    establishment_product_id = value
+        else:
+            raise IdNotFound
+
+        if establishment_product_id == establishment_id:
+            update = update_svc(ProductModel, product_id, data)
+
+            return jsonify(update), 200
+
+    except IdNotFound:
+        return jsonify(error="Product ID doesn't exists."), 400
+    except IntegrityError:
+        return jsonify(error="Product ID already exists."), 400
