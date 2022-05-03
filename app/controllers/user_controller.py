@@ -1,16 +1,16 @@
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.decorators import validate, validate_fields
 from app.exceptions import (CellphoneAlrealyExists, EmailAlrealyExists,
                             IdNotFound, InvalidCellphone, TableEmpty,
-                            WrongKeyError)
+                            UnauthorizedKey, UnauthorizedUser, WrongKeyError,
+                            user_exception)
 from app.models.user_model import UserModel
 from app.services.query_service import (filter_svc, get_all_svc, get_by_id_svc,
                                         update_svc)
-from app.exceptions import UnauthorizedKey, UnauthorizedUser, user_exception
 from app.services.query_user_service import validate_user_data_svc
 
 
@@ -29,8 +29,8 @@ def patch_user(id):
     except IdNotFound as err:
         return err.args[0], err.args[1]
 
-    except UnauthorizedUser :
-        return {"Error": "Unauthorized user" }, HTTPStatus.UNAUTHORIZED
+    except UnauthorizedUser:
+        return {"Error": "Unauthorized user"}, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()
@@ -46,14 +46,12 @@ def deactivatte_or_activate_user(id):
         update_svc(UserModel, id, user.__dict__)
 
         if user.is_activate == False:
-            return {"Error":"Deactivated user"}, 200
+            return {"Error": "Deactivated user"}, 200
         return {"message": "Activate user"}, 200
-        
-        
-    except UnauthorizedUser :
-        return {"Error": "Unauthorized user" }, HTTPStatus.UNAUTHORIZED
 
-    
+    except UnauthorizedUser:
+        return {"Error": "Unauthorized user"}, HTTPStatus.UNAUTHORIZED
+
 
 @jwt_required()
 def get_all_users():
@@ -61,14 +59,14 @@ def get_all_users():
     try:
         if token_user_id != 1:
             raise UnauthorizedUser
-       
+
         users = get_all_svc(Model=UserModel)
         return jsonify(users), HTTPStatus.OK
-   
+
     except TableEmpty as err:
         return err.args[0], err.args[1]
-    except UnauthorizedUser :
-        return {"Error": "Unauthorized user" }, HTTPStatus.UNAUTHORIZED
+    except UnauthorizedUser:
+        return {"Error": "Unauthorized user"}, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()
@@ -78,11 +76,10 @@ def get_by_id(id):
         if token_user_id != 1:
             raise UnauthorizedUser
         user = get_by_id_svc(model=UserModel, id=id)
-    
+
         return jsonify(user), HTTPStatus.OK
-    
+
     except IdNotFound as err:
         return err.args[0], err.args[1]
-    except UnauthorizedUser :
-        return {"Error": "Unauthorized user" }, HTTPStatus.UNAUTHORIZED
-
+    except UnauthorizedUser:
+        return {"Error": "Unauthorized user"}, HTTPStatus.UNAUTHORIZED
