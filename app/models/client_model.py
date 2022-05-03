@@ -10,7 +10,7 @@ from app.configs.database import db
 @dataclass
 class ClientModel(db.Model):
 
-    # id: int
+    id: int
     name: str
     avatar: str
     contact: str
@@ -32,8 +32,8 @@ class ClientModel(db.Model):
     is_late = Column(Boolean, nullable=False, default=False)  # default False v
     is_activate = Column(Boolean, nullable=False, default=True)  # default True v
     establishment_id = Column(
-        Integer, ForeignKey("establishments.id"), nullable=False, unique=True
-    )  # nome errado v
+        Integer, ForeignKey("establishments.id"), nullable=False
+    )  # estava unique=True
 
     sales = relationship(
         "SaleModel", backref=backref("clients", uselist=True), uselist=False
