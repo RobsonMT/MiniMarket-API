@@ -34,7 +34,32 @@ Tecnologias utilizadas na construção dessa aplicação:
 
 ## visão geral
 
-├── README.md
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#motivacao">Sobre o projeto</a>
+      <ul>
+        <li><a href="#tecnologias">Tecnologias</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#instrucoes">Instruções</a>
+      <ul>
+        <li><a href="#prerequisitos">Prerequisitos</a></li>
+        <li><a href="#instalacao">Instalação</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+<!-- ├── README.md
 ├── data
 ├── gen
 │ ├── analysis
@@ -43,7 +68,7 @@ Tecnologias utilizadas na construção dessa aplicação:
 └── src
 ├── analysis
 ├── data-preparation
-└── paper
+└── paper -->
 
 ## Instruções
 
