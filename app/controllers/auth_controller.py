@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
-from app.exceptions import AttributeTypeError, DisabledAccount
+from app.exceptions import AttributeTypeError, DisabledAccount, UnauthorizedUser, MissingKeyError, CellphoneAlreadyExists
 from app.models import UserModel
 
 
@@ -33,24 +33,42 @@ def signin():
         return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
 
 
-# Proteger
+@jwt_required()
 def signup():
+    obrigatory_keys = ["name", "email", "password", "contact"]
+    user_id = get_jwt_identity()["id"]
     data = request.get_json()
     session: Session = db.session
-
+    missing_keys = [key for key in obrigatory_keys if key not in data.keys()]
     try:
-        user = UserModel(**data)
+        if user_id != 1:
+            raise UnauthorizedUser
 
+        if len(missing_keys) > 0:
+            raise MissingKeyError
+
+        valid_if_cellphone_exists = UserModel.query.filter_by(contact=data["contact"]).all()
+        if len(valid_if_cellphone_exists) >0:
+            raise CellphoneAlreadyExists
+
+
+        user = UserModel(**data)
         session.add(user)
         session.commit()
 
         data.pop("password")
 
         return jsonify(data), HTTPStatus.CREATED
+    except UnauthorizedUser :
+        return {"Error": "Unauthorized user. You need to be an admin to do it!"}, HTTPStatus.UNAUTHORIZED 
+    except MissingKeyError:
+        return jsonify({"obrigatory keys": obrigatory_keys, "optional_keys":['avatar'], "keys_missing":missing_keys}), HTTPStatus.BAD_REQUEST
+    except CellphoneAlreadyExists:
+        return {"Error":"The contact already exists"}, 409
     except IntegrityError:
         session.rollback()
-
         return {"error": "user already exists!"}, HTTPStatus.CONFLICT
+        
     finally:
         session.close()
 

@@ -2,7 +2,7 @@ import re
 
 from flask import jsonify
 
-from app.exceptions import (CellphoneAlrealyExists, EmailAlrealyExists,
+from app.exceptions import (CellphoneAlreadyExists, EmailAlrealyExists,
                             InvalidCellphone, WrongKeyError)
 
 from .query_service import get_all_svc
@@ -42,6 +42,6 @@ def validate_user_data_svc(data, Model):
     if "email" in data_keys and data["email"] in emails:
         raise EmailAlrealyExists
     if "email" in data_keys and data["contact"] in cellphones:
-        raise CellphoneAlrealyExists
+        raise CellphoneAlreadyExists
 
     return data

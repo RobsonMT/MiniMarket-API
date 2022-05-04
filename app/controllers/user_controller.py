@@ -4,7 +4,7 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.decorators import validate, validate_fields
 from app.exceptions import (
-  CellphoneAlrealyExists, 
+  CellphoneAlreadyExists, 
   EmailAlrealyExists,                       
   IdNotFound,
   InvalidCellphone,

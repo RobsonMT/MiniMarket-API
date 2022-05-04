@@ -5,7 +5,7 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.decorators import validate
-from app.exceptions import (CellphoneAlrealyExists, IdNotFound,
+from app.exceptions import (CellphoneAlreadyExists, IdNotFound,
                             NameAlreadyExists, UnauthorizedUser)
 from app.models import ClientModel
 from app.models.establishment_model import EstablishmentModel
@@ -25,7 +25,7 @@ def post_client():
         ).all()
 
         if len(search_for_duplicate_contact) > 0:
-            raise CellphoneAlrealyExists
+            raise CellphoneAlreadyExists
 
         if len(search_for_duplicate_name) > 0:
             raise NameAlreadyExists
@@ -42,7 +42,7 @@ def post_client():
 
         new_client = create_svc(ClientModel, data)
         return jsonify(new_client), HTTPStatus.CREATED
-    except CellphoneAlrealyExists:
+    except CellphoneAlreadyExists:
         return {"Error": "Cellphone alreadyExists"}, 409
 
     except NameAlreadyExists:
