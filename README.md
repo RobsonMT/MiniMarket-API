@@ -38,7 +38,17 @@
         <li><a href="#instalação">Instalação</a></li>
       </ul>
     </li>
-    <li><a href="#rotas">Rotas</a></li>
+    <li>
+    <a href="#rotas">Rotas</a>
+      <ul>
+        <li><a href="#AUTH">AUTH</a></li>
+        <li><a href="#USERS">USERS</a></li>
+        <li><a href="#CLIENTS">CLIENTS</a></li>
+        <li><a href="#ESTABLISHMENT">ESTABLISHMENT</a></li>
+        <li><a href="#PRODUCTS">PRODUCTS</a></li>
+        <li><a href="#SALES">SALES</a></li>
+      </ul>
+    </li>
     <li><a href="#licenca">Licença</a></li>
     <li><a href="#contato">Contato</a></li>
   </ol>
@@ -90,11 +100,12 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 `$ pip install -r requirements.txt`
 <br />
 
-
 ## Rotas
 
 <br />
 <br />
+
+## AUTH
 
 ## POST signup
 
@@ -115,7 +126,6 @@ Body (JSON):
 }
 ```
 
-
 ## POST signin
 
 Loga o usuário.
@@ -127,9 +137,8 @@ Body (JSON):
 
 ```sh
 {"email": "marcelo@email.com",
-"password": "123456"} 
+"password": "123456"}
 ```
-
 
 <br />
 <br />
@@ -142,20 +151,17 @@ Retorna todos os usuários.
 
 `/api/users`
 
-
 ## GET all users
 
 Retorna todos os usuários.
 
 `/api/users/all`
 
-
 ## GET user by id
 
 Retorna todos os usuários.
 
 `/api/users/<id>`
-
 
 ## PATCH user by id
 
@@ -178,7 +184,6 @@ Altera o estado ativo/inativo
 <br />
 <br />
 
-
 ## CLIENTS
 
 ## GET all clients
@@ -187,13 +192,11 @@ Retorna todos os clientes do estabelecimento.
 
 `api/establishment/<establishment_id>/client`
 
-
 ## GET client id by establishment id
 
 Retorna UM cliente (id) do estabelecimento.
 
 `/establishment/<establishment_id>/client/<client_id>`
-
 
 ## POST client
 
@@ -232,8 +235,11 @@ BODY:
 ## ESTABLISHMENT
 
 ## POST
-## GET one establishment 
+
+## GET one establishment
+
 ## GET establishment by name
+
 ## PATCH establishment
 
 <br />
@@ -242,9 +248,13 @@ BODY:
 ## PRODUCTS
 
 ## POST
-## GET 
+
 ## GET
+
+## GET
+
 ## PATCH
+
 ## GET
 
 <br />
@@ -253,8 +263,11 @@ BODY:
 ## SALES
 
 ## GET
+
 ## GET
+
 ## POST
+
 ## PATCH
 
 ## Sobre
