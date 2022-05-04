@@ -17,16 +17,21 @@ class SaleModel(db.Model):
     payment_id: int
     sale_total: float
     remain_to_pay: float
+    payment_method: object
 
     __tablename__ = "sales"
 
     id = Column(Integer, primary_key=True)
-    date = Column(DateTime)
-    paid_date = Column(DateTime)
-    client_id = Column(Integer, ForeignKey("clients.id"))
-    payment_id = Column(Integer, ForeignKey("payments.id"))
-    sale_total = Column(Numeric(asdecimal=True))
-    remain_to_pay = Column(Numeric(asdecimal=True))
+    date = Column(DateTime)  # ALTERAR DEFAULT default=dt.now()
+    paid_date = Column(DateTime, nullable=False)  # ALTERAR DEFAULT
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    payment_id = Column(Integer, ForeignKey("payments.id"), nullable=False)
+    sale_total = Column(Numeric(asdecimal=True), nullable=False)
+    remain_to_pay = Column(Numeric(asdecimal=True), nullable=False)
+
+    payment_method = relationship(
+        "PaymentModel", backref="payment_method", uselist=False
+    )
 
     products = relationship(
         "ProductModel",
