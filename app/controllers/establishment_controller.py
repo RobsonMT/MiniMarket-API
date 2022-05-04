@@ -15,12 +15,16 @@ from app.services.query_service import (create_svc, filter_svc, get_all_svc,
 @jwt_required()
 def post_establishment(id):
     data = request.get_json()
+<<<<<<< HEAD
 
     if get_jwt_identity()["id"] != 1:
         return {
             "error": "you don't have access to this route because you are not admin"
         }, HTTPStatus.BAD_REQUEST
 
+=======
+    data["user_id"] = get_jwt_identity()["id"]  # Pegar id da url (usar esse apenas para validar se é admin)
+>>>>>>> 8aa5146f5ba586f200aa219033144b12c3d87f73
     data["name"] = data["name"].title()
     address = data.pop("address")  # validar todo o objeto, não apenas o numero
 
