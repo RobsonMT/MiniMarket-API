@@ -2,7 +2,8 @@ from datetime import timedelta
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, get_jwt_identity,jwt_required
+from flask_jwt_extended import (create_access_token, get_jwt_identity,
+                                jwt_required)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 

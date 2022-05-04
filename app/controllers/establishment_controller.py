@@ -3,19 +3,16 @@ from http import HTTPStatus
 
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from psycopg2.errors import NotNullViolation
-from sqlalchemy.exc import IntegrityError
 
 from app.decorators import validate
 from app.exceptions.generic_exception import (GenericKeyError, IdNotFound,
-                                              UnauthorizedUser, WrongKeyError)
+                                              UnauthorizedUser)
 from app.models import AddressModel, EstablishmentModel, UserModel
 from app.services.query_establishment_service import (
     keys_address, keys_establishment, missing_keys_address,
     missing_keys_establishment)
 from app.services.query_service import (create_svc, filter_svc, get_all_svc,
                                         get_by_id_svc, update_svc)
-
 
 
 @jwt_required()
@@ -45,6 +42,7 @@ def post_establishment(user_id):
         return err.args[0], err.args[1]
 
     data["name"] = data["name"].title()
+    address = data.pop("address")
 
     try:
         filter_svc(Model=AddressModel, fields=address)

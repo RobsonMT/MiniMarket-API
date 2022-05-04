@@ -26,7 +26,6 @@ def get_by_id_svc(model, id):
 
 
 def filter_svc(Model, fields):
-    # fields in Object
     session = current_app.db.session
 
     founds = session.query(Model).filter_by(**fields).all()
