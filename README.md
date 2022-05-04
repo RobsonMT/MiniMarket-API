@@ -22,8 +22,8 @@
 
 ## Visão geral
 
-<details>
-  <summary>Table of Contents</summary>
+<!-- <details> -->
+  <summary>Tabela de conteúdos</summary>
   <ol>
     <li>
       <a href="#motivacao">Sobre o projeto</a>
@@ -45,7 +45,7 @@
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
-</details>
+<!-- </details> -->
 
 ## Motivação
 
