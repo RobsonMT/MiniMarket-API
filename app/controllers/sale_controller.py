@@ -4,8 +4,8 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
 
-from app.exceptions import UnauthorizedUser, FilterError, IdNotFound
-from app.models import SaleModel, AddressModel
+from app.exceptions import FilterError, IdNotFound, UnauthorizedUser
+from app.models import AddressModel, SaleModel
 from app.services import query_service
 
 
@@ -21,15 +21,17 @@ def post_sale():
     # except IntegrityError:
     #     return {"error": "Sale (ID) already exists."}, 409
 
+
 @jwt_required()
 def patch_sale(id):
-    data= request.get_json()
-    
+    data = request.get_json()
+
     try:
         return query_service.update_svc(SaleModel, id, data)
     except IdNotFound as err:
         return err.args[0], err.args[1]
-    
+
+
 @jwt_required()
 def get_sales(client_id):
 

@@ -11,14 +11,15 @@ from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-
-from app.exceptions.generic_exception import MissingKeyError,UnauthorizedUser, WrongKeyError
+from app.exceptions.generic_exception import (MissingKeyError,
+                                              UnauthorizedUser, WrongKeyError)
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.product_categories import ProductCategory
 from app.services import serialize_products_svc
 from app.services.query_service import create_svc
+
 
 @jwt_required()
 def create_one_product() -> dict:
@@ -154,7 +155,7 @@ def get_all_products(establishment_id: int) -> dict:
 
 @jwt_required()
 def get_product_by_id(establishment_id: int, product_id: int) -> dict:
-# def get_product_by_id(product_id: int) -> dict:
+    # def get_product_by_id(product_id: int) -> dict:
     user = get_jwt_identity()
     # result = get_by_id_svc(model=ProductModel, id=product_id)
 
@@ -186,6 +187,7 @@ def get_product_by_id(establishment_id: int, product_id: int) -> dict:
         }, HTTPStatus.UNAUTHORIZED
     except FilterError:
         return {"error": "product not found"}, HTTPStatus.NOT_FOUND
+
 
 @jwt_required()
 def get_product_by_query_parameters(establishment_id: int) -> dict:
