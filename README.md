@@ -43,7 +43,6 @@
     <li><a href="#contato">Contato</a></li>
   </ol>
 
-
 ## Tecnologias
 
 Tecnologias utilizadas na construção dessa aplicação:
@@ -51,7 +50,6 @@ Tecnologias utilizadas na construção dessa aplicação:
 - [Python](https://www.python.org/)
 - [Flask](https://flask.palletsprojects.com/en/2.1.x/)
 - [Flask SQLALchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
-
 
 ## Instruções
 
@@ -65,13 +63,13 @@ Clone o repositório em sua máquina:
 Via SSH:
 <br />
 
-`$ git clone git@github.com:RobsonMT/MiniMarket-API.git` 
+`$ git clone git@github.com:RobsonMT/MiniMarket-API.git`
 <br />
 
 Via HTTPS:
 <br />
 
-`$ git clone https://github.com/RobsonMT/MiniMarket-API.git` 
+`$ git clone https://github.com/RobsonMT/MiniMarket-API.git`
 <br />
 
 Crie um ambiente virtual (venv) para seus pacotes pelo comando:
@@ -95,6 +93,7 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 ## Rotas
 
 ## Signup
+
 Método: POST
 <br />
 Auth: user/admin
@@ -106,17 +105,26 @@ Body (JSON):
 
 <code>
   {
-  "name": "marcelo",
-  "email": "marcelo@email.com",
-  "password": "123456",
-  "avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/2048px-User_font_awesome.svg.png",
-  "contact": "19 93588-3611"
+<br />
+
+"name": "marcelo",
+<br />
+
+"email": "marcelo@email.com",
+<br />
+
+"password": "123456",
+<br />
+
+"avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/2048px-User_font_awesome.svg.png",
+<br />
+
+"contact": "19 93588-3611"
+<br />
+
 }
 </code>
 
-
 <br />
-
-
 
 ## Sobre
