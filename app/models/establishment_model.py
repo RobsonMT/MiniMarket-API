@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from enum import unique
-from itertools import product
 
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import backref, relationship
@@ -11,7 +9,7 @@ from app.configs.database import db
 @dataclass
 class EstablishmentModel(db.Model):
 
-    # id: int
+    id: int
     name: str
     cnpj: str
     contact: str
@@ -19,7 +17,7 @@ class EstablishmentModel(db.Model):
     user_id: int
     # address_id: int
     address: object
-    # clients: list
+    clients: list
     products: list
 
     __tablename__ = "establishments"

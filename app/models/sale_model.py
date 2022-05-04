@@ -23,8 +23,8 @@ class SaleModel(db.Model):
     id = Column(Integer, primary_key=True)
     date = Column(DateTime)
     paid_date = Column(DateTime)
-    client_id = Column(Integer, ForeignKey("clients.id"), unique=True)
-    payment_id = Column(Integer, ForeignKey("payments.id"), unique=True)
+    client_id = Column(Integer, ForeignKey("clients.id"))
+    payment_id = Column(Integer, ForeignKey("payments.id"))
     sale_total = Column(Numeric(asdecimal=True))
     remain_to_pay = Column(Numeric(asdecimal=True))
 
