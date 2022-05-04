@@ -95,4 +95,24 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 
 ## Rotas
 
+## Signup
+`/api/signup`
+Método: POST
+Acesso: user/admin
+Body (JSON):
+<br />
+
+`
+{
+  "name": "marcelo",
+  "email": "marcelo@email.com",
+  "password": "123456",
+  "avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/2048px-User_font_awesome.svg.png",
+  "contact": "19 93588-3611"
+}
+`
+<br />
+
+
+
 ## Sobre
