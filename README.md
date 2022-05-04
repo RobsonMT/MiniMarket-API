@@ -107,6 +107,8 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 
 ## AUTH
 
+Rotas de autenticação.
+
 ## POST signup
 
 Cria um novo usuário.
@@ -144,6 +146,8 @@ Body (JSON):
 <br />
 
 ## USERS
+
+Rotas de usuário.
 
 ## GET users
 
@@ -185,6 +189,8 @@ Altera o estado ativo/inativo
 <br />
 
 ## CLIENTS
+
+Rotas de clientes.
 
 ## GET all clients
 
@@ -234,6 +240,8 @@ BODY:
 
 ## ESTABLISHMENT
 
+Rotas de estabelecimento.
+
 ## POST
 
 ## GET one establishment
@@ -246,6 +254,8 @@ BODY:
 <br />
 
 ## PRODUCTS
+
+Rota de produtos.
 
 ## POST
 
@@ -261,6 +271,8 @@ BODY:
 <br />
 
 ## SALES
+
+Rota de vendas
 
 ## GET
 
