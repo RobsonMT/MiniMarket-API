@@ -38,7 +38,7 @@
         <li><a href="#Instalação">Instalação</a></li>
       </ul>
     </li>
-    <li><a href="#usabilidade">Usabilidade</a></li>
+    <li><a href="#rotas">Rotas</a></li>
     <li><a href="#licenca">Licença</a></li>
     <li><a href="#contato">Contato</a></li>
   </ol>
@@ -66,13 +66,13 @@ Clone o repositório em sua máquina:
 Via SSH:
 <br />
 
-`git clone git@github.com:RobsonMT/MiniMarket-API.git` 
+`$ git clone git@github.com:RobsonMT/MiniMarket-API.git` 
 <br />
 
 Via HTTPS:
 <br />
 
-`git clone https://github.com/RobsonMT/MiniMarket-API.git` 
+`$ git clone https://github.com/RobsonMT/MiniMarket-API.git` 
 <br />
 
 Crie um ambiente virtual (venv) para seus pacotes pelo comando:
@@ -90,9 +90,9 @@ Ative o venv pelo comando:
 Instale os pacotes contidos no `requirements.txt` através do comando:
 <br />
 
-`pip install -r requirements.txt`
+`$ pip install -r requirements.txt`
 <br />
 
-## Usabilidade
+## Rotas
 
 ## Sobre
