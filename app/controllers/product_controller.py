@@ -50,23 +50,25 @@ def create_one_product() -> dict:
     wrong_key = set(data.keys()).difference(fields)
 
     missing_key = set(expected).difference(data.keys())
-
-    categories = data.pop("categories")
-
-    establishment = EstablishmentModel.query.filter(
-        and_(
-            EstablishmentModel.id == data.get("establieshment_id"),
-            EstablishmentModel.user_id == user["id"],
-        ),
-    ).one_or_none()
-
+    
     try:
-        if not establishment and user.id != 1:
+        if missing_key:
+            raise MissingKeyError
+            
+        categories = data.pop("categories")
+
+        establishment = EstablishmentModel.query.filter(
+
+            and_(
+                EstablishmentModel.id == data.get("establieshment_id"),
+                EstablishmentModel.user_id == user["id"],
+            ),
+        ).one_or_none()
+        if not establishment and user['id'] == 1:
             raise UnauthorizedUser
         if wrong_key:
             raise WrongKeyError
-        if missing_key:
-            raise MissingKeyError
+       
 
         product = create_svc(ProductModel, data)
 
