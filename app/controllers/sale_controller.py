@@ -17,8 +17,9 @@ def post_sale():
         return jsonify(data), 201
     except UnauthorizedUser:
         return {"error": "Unauthorized user."}, 401
-    except IntegrityError:
-        return {"error": "Sale (ID) already exists."}, 409
+        
+    # except IntegrityError:
+    #     return {"error": "Sale (ID) already exists."}, 409
 
 @jwt_required()
 def patch_sale(id):
