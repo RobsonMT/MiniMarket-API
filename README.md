@@ -90,41 +90,171 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 `$ pip install -r requirements.txt`
 <br />
 
+
 ## Rotas
 
-## Signup
+<br />
+<br />
 
-Método: POST
-<br />
-Auth: user/admin
-<br />
+## POST signup
+
+Cria um novo usuário.
+
 `/api/signup`
 <br />
 Body (JSON):
 <br />
 
-<code>
-  {
-<br />
-
-"name": "marcelo",
-<br />
-
-"email": "marcelo@email.com",
-<br />
-
-"password": "123456",
-<br />
-
-"avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/2048px-User_font_awesome.svg.png",
-<br />
-
-"contact": "19 93588-3611"
-<br />
-
+```sh
+{
+  "name": "marcelo",
+  "email": "marcelo@email.com",
+  "password": "123456",
+  "avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/2048px-User_font_awesome.svg.png",
+  "contact": "19 93588-3611"
 }
-</code>
+```
+
+
+## POST signin
+
+Loga o usuário.
+
+`/api/signin`
+<br />
+Body (JSON):
+<br />
+
+```sh
+{"email": "marcelo@email.com",
+"password": "123456"} 
+```
+
 
 <br />
+<br />
+
+## USERS
+
+## GET users
+
+Retorna todos os usuários.
+
+`/api/users`
+
+
+## GET all users
+
+Retorna todos os usuários.
+
+`/api/users/all`
+
+
+## GET user by id
+
+Retorna todos os usuários.
+
+`/api/users/<id>`
+
+
+## PATCH user by id
+
+Retorna todos os usuários.
+
+`/api/users/<id>`
+
+```sh
+{
+  "name": "Marcelo Menddes"
+}
+```
+
+## PATCH change user state
+
+Altera o estado ativo/inativo
+
+`/api/users/changestate/<id>`
+
+<br />
+<br />
+
+
+## CLIENTS
+
+## GET all clients
+
+Retorna todos os clientes do estabelecimento.
+
+`api/establishment/<establishment_id>/client`
+
+
+## GET client id by establishment id
+
+Retorna UM cliente (id) do estabelecimento.
+
+`/establishment/<establishment_id>/client/<client_id>`
+
+
+## POST client
+
+Cria um novo cliente.
+
+`/api/users/api/client
+
+```sh
+{
+  "name": "Joséw Silva",
+  "avatar": "https://media.istockphoto.com/illustrations/client-prime-white-round-button-illustration-id873164974",
+  "contact": "(19)88d888-1111",
+  "pay_day": 20,
+  "establishment_id": 3
+}
+
+```
+
+## PATCH client
+
+Atualiza o cliente do estabelecimento.
+
+`/establishment/<establishment_id>/client/<client_id>`
+
+BODY:
+
+```sh
+{
+  "name": "Hamero"
+}
+```
+
+<br />
+<br />
+
+## ESTABLISHMENT
+
+## POST
+## GET one establishment 
+## GET establishment by name
+## PATCH establishment
+
+<br />
+<br />
+
+## PRODUCTS
+
+## POST
+## GET 
+## GET
+## PATCH
+## GET
+
+<br />
+<br />
+
+## SALES
+
+## GET
+## GET
+## POST
+## PATCH
 
 ## Sobre
