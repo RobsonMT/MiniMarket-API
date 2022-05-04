@@ -259,27 +259,44 @@ Rota de produtos.
 
 ## POST
 
-## GET
+`/api/establishments/products`
 
 ## GET
+
+`/api/establishments/<int:establishment_id>/products`
+
+## GET
+
+`/api/establishments/<int:establishment_id>/products/<int:product_id>`
+
+## GET
+
+`/api/establishments/<int:establishment_id>/products/query`
 
 ## PATCH
 
-## GET
-
+`/api/establishments/<int:establishment_id>/products/<int:product_id>`
 <br />
 <br />
 
 ## SALES
 
-Rota de vendas
+Rota de vendas.
 
 ## GET
 
+`/api/sales/<int:id>`
+
 ## GET
+
+`/api/sales/client/<int:client_id>`
 
 ## POST
 
+`/api/sales`
+
 ## PATCH
+
+`/api/sales/<int:id>`
 
 ## Sobre
