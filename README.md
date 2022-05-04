@@ -244,11 +244,23 @@ Rotas de estabelecimento.
 
 ## POST
 
+POST /api/establishments/user/<int:user_id>
+
+## GET
+
+GET /api/establishments
+
 ## GET one establishment
+
+GET /api/establishments/<int:id>
 
 ## GET establishment by name
 
+GET /api/establishments/name/<name>
+
 ## PATCH establishment
+
+PATCH /api/establishments/<int:id>
 
 <br />
 <br />
