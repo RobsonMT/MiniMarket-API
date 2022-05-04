@@ -33,9 +33,9 @@
       </ul>
     </li>
     <li>
-      <a href="#Instruções">Instruções</a>
+      <a href="#instruções">Instruções</a>
       <ul>
-        <li><a href="#Instalação">Instalação</a></li>
+        <li><a href="#instalação">Instalação</a></li>
       </ul>
     </li>
     <li><a href="#rotas">Rotas</a></li>
@@ -52,7 +52,6 @@ Tecnologias utilizadas na construção dessa aplicação:
 - [Flask](https://flask.palletsprojects.com/en/2.1.x/)
 - [Flask SQLALchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
 
-<p align="right">(<a href="#top">voltar ao topo</a>)</p>
 
 ## Instruções
 
@@ -96,21 +95,26 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 ## Rotas
 
 ## Signup
-`/api/signup`
 Método: POST
-Acesso: user/admin
+<br />
+Auth: user/admin
+<br />
+`/api/signup`
+<br />
 Body (JSON):
 <br />
 
-`
-{
+<code>
+  {
   "name": "marcelo",
   "email": "marcelo@email.com",
   "password": "123456",
   "avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/2048px-User_font_awesome.svg.png",
   "contact": "19 93588-3611"
 }
-`
+</code>
+
+
 <br />
 
 
