@@ -11,12 +11,15 @@
   <p align="center">
     Uma API voltada para a gestão de pequenos comércios, focada em agilizar a organização dos pagamentos e a gestão dos clientes.
     <br />
+    <br />
+    <br />
     <a href="linkdovercel"><strong>Explore a aplicação no vercel.</strong></a>
     <br />
-    <br /> 
+    <br />
     <a href="https://github.com/RobsonMT/MiniMarket-API/issues">Reportar um bug</a>
     ·
     <a href="https://github.com/RobsonMT/MiniMarket-API/issues">Sugerir uma funcionalidade</a>
+
   </p>
 </div>
 
@@ -56,6 +59,13 @@ Tecnologias utilizadas na construção dessa aplicação:
 <p align="right">(<a href="#top">voltar ao topo</a>)</p>
 
 ## Instruções
+
+Este é um exemplo de como configurar e rodar a aplicação localmente, siga os seguintes passos:
+
+### Pre-requisitos
+
+Instale os pacotes contidos no `requirements.txt` através do comando:
+`pip install -r requirements.txt`
 
 ## Recursos adicionais
 
