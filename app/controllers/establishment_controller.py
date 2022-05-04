@@ -17,6 +17,7 @@ from app.services.query_service import (create_svc, filter_svc, get_all_svc,
                                         get_by_id_svc, update_svc)
 
 
+
 @jwt_required()
 def post_establishment(user_id):
 
@@ -101,6 +102,7 @@ def get_all_establishments():
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
+
     if establishments == []:
         return {"error": "You don't have any establishment"}, HTTPStatus.BAD_REQUEST
 
