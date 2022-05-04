@@ -11,6 +11,7 @@ from sqlalchemy.orm.session import Session
 from app.configs.database import db
 from app.exceptions import AttributeTypeError, DisabledAccount
 from app.models import UserModel
+from app.services.query_regex import regex_checker
 
 
 def signin():

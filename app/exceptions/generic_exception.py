@@ -46,3 +46,7 @@ class MissingKeyError(Exception):
 
 class UnauthorizedUser(Exception):
     ...
+
+
+class GenericKeyError(Exception):
+    ...

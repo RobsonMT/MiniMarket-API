@@ -1,3 +1,4 @@
+from audioop import add
 from http import HTTPStatus
 
 from flask import jsonify, request
@@ -6,47 +7,65 @@ from psycopg2.errors import NotNullViolation
 from sqlalchemy.exc import IntegrityError
 
 from app.decorators import validate
-from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
+from app.exceptions.generic_exception import (GenericKeyError, IdNotFound,
+                                              UnauthorizedUser, WrongKeyError)
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import (create_svc, filter_svc, get_all_svc, get_by_id_svc, update_svc)
+from app.services.query_establishment_service import (
+    keys_address, keys_establishment, missing_keys_address,
+    missing_keys_establishment)
+from app.services.query_service import (create_svc, filter_svc, get_all_svc,
+                                        get_by_id_svc, update_svc)
 
 
 @jwt_required()
-def post_establishment(id):
+def post_establishment(user_id):
+
+    try:
+        get_by_id_svc(id=user_id, model=UserModel)
+    except:
+        return {"error": "The user_id entered is not valid"}, HTTPStatus.BAD_REQUEST
+
     data = request.get_json()
-    data["user_id"] = get_jwt_identity()["id"]  # Pegar id da url (usar esse apenas para validar se é admin)
+
+    if get_jwt_identity()["id"] != 1:
+        return {
+            "error": "You don't have access to this route because you are not admin"
+        }, HTTPStatus.BAD_REQUEST
+
+    address = data.pop("address")
+
+    try:
+        keys_address(data=address)
+        keys_establishment(data=data)
+
+        missing_keys_address(data=address)
+        missing_keys_establishment(data=data)
+    except GenericKeyError as err:
+        return err.args[0], err.args[1]
+
     data["name"] = data["name"].title()
-    address = data.pop("address")  # validar todo o objeto, não apenas o numero
 
     try:
         filter_svc(Model=AddressModel, fields=address)
-        return {"error": "address already registered"}, HTTPStatus.BAD_REQUEST
+        return {"error": "Address already registered"}, HTTPStatus.BAD_REQUEST
     except:
         ...
 
     try:
         filter_svc(Model=EstablishmentModel, fields=data)
-        return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
+        return {"error": "Establishment already registered"}, HTTPStatus.BAD_REQUEST
     except:
         ...
 
-    try:
-        create_svc(AddressModel, address)
-    except IntegrityError as err:
-        if type(err.orig) == NotNullViolation:
-            return {"error": "Field(s) Missing on address"}, HTTPStatus.BAD_REQUEST
+    data["user_id"] = user_id
+
+    create_svc(AddressModel, address)
 
     data["address_id"] = (
         AddressModel.query.filter_by(number=address.get("number")).first().id
     )
 
-    try:
-        new_establishment = create_svc(EstablishmentModel, data)
-    except IntegrityError as err:
-        if type(err.orig) == NotNullViolation:
-            return {
-                "error": "Field(s) Missing on establishment"
-            }, HTTPStatus.BAD_REQUEST
+    new_establishment = create_svc(EstablishmentModel, data)
 
     return jsonify(new_establishment), HTTPStatus.CREATED
 
