@@ -33,9 +33,9 @@
       </ul>
     </li>
     <li>
-      <a href="#instrucoes">Instruções</a>
+      <a href="#Instruções">Instruções</a>
       <ul>
-        <li><a href="#instalacao">Instalação</a></li>
+        <li><a href="#Instalação">Instalação</a></li>
       </ul>
     </li>
     <li><a href="#usabilidade">Usabilidade</a></li>
@@ -43,7 +43,6 @@
     <li><a href="#contato">Contato</a></li>
   </ol>
 
-## Motivação
 
 ## Tecnologias
 
@@ -93,5 +92,7 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 
 `pip install -r requirements.txt`
 <br />
+
+## Usabilidade
 
 ## Sobre
