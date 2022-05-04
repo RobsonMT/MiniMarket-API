@@ -56,7 +56,6 @@ def signup():
     finally:
         session.close()
 
-
 @jwt_required()
 def get_user():
     user: UserModel = get_jwt_identity()
