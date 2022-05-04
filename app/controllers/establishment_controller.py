@@ -8,30 +8,33 @@ from sqlalchemy.exc import IntegrityError
 from app.decorators import validate
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import (create_svc, get_all_svc, get_by_id_svc,
-                                        update_svc)
+from app.services.query_service import (create_svc, filter_svc, get_all_svc,
+                                        get_by_id_svc, update_svc)
 
 
 @jwt_required()
-def post_establishment():
+def post_establishment(id):
     data = request.get_json()
-    data["user_id"] = get_jwt_identity()[
-        "id"
-    ]  # Pegar id da url (usar esse apenas para validar se é admin)
+
+    if get_jwt_identity()["id"] != 1:
+        return {
+            "error": "you don't have access to this route because you are not admin"
+        }, HTTPStatus.BAD_REQUEST
+
     data["name"] = data["name"].title()
     address = data.pop("address")  # validar todo o objeto, não apenas o numero
 
-    data["address_id"] = AddressModel.query.filter_by(
-        number=address.get("number")
-    ).first()
-
-    establishment = EstablishmentModel.query.filter_by(cnpj=data.get("cnpj")).first()
-
-    if data["address_id"] != None:
+    try:
+        filter_svc(Model=AddressModel, fields=address)
         return {"error": "address already registered"}, HTTPStatus.BAD_REQUEST
+    except:
+        ...
 
-    if establishment != None:
+    try:
+        filter_svc(Model=EstablishmentModel, fields=data)
         return {"error": "establishment already registered"}, HTTPStatus.BAD_REQUEST
+    except:
+        ...
 
     try:
         create_svc(AddressModel, address)
