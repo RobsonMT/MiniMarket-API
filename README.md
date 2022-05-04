@@ -20,19 +20,7 @@
   </p>
 </div>
 
-## Motivação
-
-## Tecnologias
-
-Tecnologias utilizadas na construção dessa aplicação:
-
-- [Python](https://www.python.org/)
-- [Flask](https://flask.palletsprojects.com/en/2.1.x/)
-- [Flask SQLALchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
-
-<p align="right">(<a href="#top">voltar ao topo</a>)</p>
-
-## visão geral
+## Visão geral
 
 <details>
   <summary>Table of Contents</summary>
@@ -58,6 +46,18 @@ Tecnologias utilizadas na construção dessa aplicação:
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
+
+## Motivação
+
+## Tecnologias
+
+Tecnologias utilizadas na construção dessa aplicação:
+
+- [Python](https://www.python.org/)
+- [Flask](https://flask.palletsprojects.com/en/2.1.x/)
+- [Flask SQLALchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+
+<p align="right">(<a href="#top">voltar ao topo</a>)</p>
 
 <!-- ├── README.md
 ├── data
