@@ -35,15 +35,12 @@
     <li>
       <a href="#instrucoes">Instruções</a>
       <ul>
-        <li><a href="#prerequisitos">Pré-requisitos</a></li>
         <li><a href="#instalacao">Instalação</a></li>
       </ul>
     </li>
     <li><a href="#usabilidade">Usabilidade</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#licenca">Licença</a></li>
+    <li><a href="#contato">Contato</a></li>
   </ol>
 
 ## Motivação
@@ -62,15 +59,21 @@ Tecnologias utilizadas na construção dessa aplicação:
 
 Este é um exemplo de como configurar e rodar a aplicação localmente, siga os seguintes passos:
 
-### Pre-requisitos
+### Instalação
+
+Clone o repositório em sua máquina:
+<br />
+
+`git clone git@github.com:RobsonMT/MiniMarket-API.git` via SSH
+<br />
+
+`git clone https://github.com/RobsonMT/MiniMarket-API.git` via HTTPS
+<br />
 
 Instale os pacotes contidos no `requirements.txt` através do comando:
 <br />
 
 `pip install -r requirements.txt`
-
 <br />
-
-## Recursos adicionais
 
 ## Sobre
