@@ -12,11 +12,7 @@ def validate(Model):
         @wraps(func)
         def wrapper(*args, **kwargs):
             data = request.get_json()
-            fields = {
-                c.name
-                for c in Model.__table__.c
-                if c.name != "id" 
-            }
+            fields = {c.name for c in Model.__table__.c if c.name != "id"}
             wrong_key = set(data.keys()).difference(fields)
             try:
                 if wrong_key:

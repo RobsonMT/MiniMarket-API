@@ -1,14 +1,17 @@
 import json
 from http import HTTPStatus
 
-from flask import  jsonify, request
+from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.exceptions import IdNotFound, CellphoneAlrealyExists, NameAlreadyExists, UnauthorizedUser
+
+from app.decorators import validate
+from app.exceptions import (CellphoneAlrealyExists, IdNotFound,
+                            NameAlreadyExists, UnauthorizedUser)
 from app.models import ClientModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.user_model import UserModel
 from app.services.query_service import create_svc, get_by_id_svc, update_svc
-from app.decorators import validate
+
 
 @jwt_required()
 @validate(ClientModel)
@@ -17,17 +20,23 @@ def post_client():
     data = request.get_json()
     try:
         search_for_duplicate_name = ClientModel.query.filter_by(name=data["name"]).all()
-        search_for_duplicate_contact = ClientModel.query.filter_by(contact=data["contact"]).all()
-    
+        search_for_duplicate_contact = ClientModel.query.filter_by(
+            contact=data["contact"]
+        ).all()
+
         if len(search_for_duplicate_contact) > 0:
             raise CellphoneAlrealyExists
 
         if len(search_for_duplicate_name) > 0:
             raise NameAlreadyExists
 
-        establishments_by_user = EstablishmentModel.query.filter_by(user_id=user_id).all()
-        establishments_ids = [establishment.id for establishment in establishments_by_user]
-        
+        establishments_by_user = EstablishmentModel.query.filter_by(
+            user_id=user_id
+        ).all()
+        establishments_ids = [
+            establishment.id for establishment in establishments_by_user
+        ]
+
         if data["establishment_id"] not in establishments_ids:
             raise UnauthorizedUser
 
@@ -38,9 +47,12 @@ def post_client():
 
     except NameAlreadyExists:
         return {"Error": "Name already Exists"}, 409
-    
+
     except UnauthorizedUser:
-        return {"Error": f"You don't have an establishment with id {data['establishment_id']}"}, 401
+        return {
+            "Error": f"You don't have an establishment with id {data['establishment_id']}"
+        }, 401
+
 
 @jwt_required()
 @validate(ClientModel)
