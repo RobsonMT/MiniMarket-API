@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="https://github.com/RobsonMT/MiniMarket-API/blob/feat/readme/assets/mmlogo.png?raw=true" alt="Logo" width="100" height="80">
+    <img src="https://github.com/RobsonMT/MiniMarket-API/blob/feat/readme/assets/mmlogo.png?raw=true" alt="Logo" width="200" height="80">
   </a>
 
   <h3 align="center">MiniMarket API</h3>
