@@ -1,27 +1,24 @@
 from http import HTTPStatus
 
+from flask import jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_sqlalchemy import BaseQuery, Pagination
+from psycopg2.errors import UniqueViolation
+from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+from sqlalchemy.orm.session import Session
+
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-from app.exceptions.generic_exception import (
-    MissingKeyError,
-    UnauthorizedUser,
-    WrongKeyError,
-)
+from app.exceptions.generic_exception import (MissingKeyError,
+                                              UnauthorizedUser, WrongKeyError)
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.product_categories import ProductCategory
 from app.services import serialize_products_svc
 from app.services.query_service import create_svc
-from flask import jsonify, request
-from flask_jwt_extended import get_jwt_identity, jwt_required
-from flask_sqlalchemy import BaseQuery, Pagination
-from ipdb import set_trace
-from psycopg2.errors import UniqueViolation
-from sqlalchemy import and_
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-from sqlalchemy.orm.session import Session
 
 
 @jwt_required()

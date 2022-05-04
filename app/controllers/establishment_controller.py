@@ -8,12 +8,8 @@ from sqlalchemy.exc import IntegrityError
 from app.decorators import validate
 from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import AddressModel, EstablishmentModel, UserModel
-from app.services.query_service import (
-    create_svc,
-    get_all_svc,
-    get_by_id_svc,
-    update_svc,
-)
+from app.services.query_service import (create_svc, get_all_svc, get_by_id_svc,
+                                        update_svc)
 
 
 @jwt_required()

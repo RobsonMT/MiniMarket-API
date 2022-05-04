@@ -2,21 +2,21 @@ from datetime import timedelta
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-from ipdb import set_trace
+from flask_jwt_extended import (create_access_token, get_jwt_identity,
+                                jwt_required)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
+from app.exceptions import AttributeTypeError, DisabledAccount
 from app.models import UserModel
-from app.exceptions import DisabledAccount, AttributeTypeError
 
 
 def signin():
     data = request.get_json()
     session: Session = db.session
     user = session.query(UserModel).filter_by(email=data["email"]).first()
-    
+
     try:
         if not user or not user.verify_password(data["password"]):
             raise AttributeTypeError
@@ -28,10 +28,11 @@ def signin():
         return {"access_token": "{}".format(token)}, HTTPStatus.OK
 
     except DisabledAccount:
-            return {"Error": "Your account is deactivated"}, HTTPStatus.UNAUTHORIZED
-        
+        return {"Error": "Your account is deactivated"}, HTTPStatus.UNAUTHORIZED
+
     except AttributeTypeError:
-            return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
+        return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
+
 
 # Proteger
 def signup():
@@ -58,6 +59,5 @@ def signup():
 @jwt_required()
 def get_user():
     user: UserModel = get_jwt_identity()
-
 
     return user, HTTPStatus.OK
