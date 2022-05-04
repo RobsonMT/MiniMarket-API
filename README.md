@@ -13,10 +13,10 @@
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore a aplicação no vercel.</strong></a>
     <br />
-    <br />    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <br /> 
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Reportar um bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/othneildrew/Best-README-Template/issues">Sugerir funcionalidade</a>
   </p>
 </div>
 
