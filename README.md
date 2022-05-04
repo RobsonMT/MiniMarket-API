@@ -11,11 +11,9 @@
   <p align="center">
     Uma API voltada para a gestão de pequenos comércios.
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore a aplicação.</strong></a>
+    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore a aplicação no vercel.</strong></a>
     <br />
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
+    <br />    ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
     ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
@@ -24,7 +22,15 @@
 
 ## Motivação
 
-## Métodos
+## Tecnologias
+
+Tecnologias utilizadas na construção dessa aplicação:
+
+- [Python](https://www.python.org/)
+- [Flask](https://flask.palletsprojects.com/en/2.1.x/)
+- [Flask SQLALchemy](https://flask-sqlalchemy.palletsprojects.com/en/2.x/)
+
+<p align="right">(<a href="#top">voltar ao topo</a>)</p>
 
 ## visão geral
 
