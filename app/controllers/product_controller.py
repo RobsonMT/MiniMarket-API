@@ -1,19 +1,12 @@
 from http import HTTPStatus
-from http.client import UNAUTHORIZED
 
 from app.configs.database import db
-from app.exceptions import (
-    FilterError,
+from app.exceptions import FilterError, UnauthorizedUser
+from app.exceptions.generic_exception import (
+    MissingKeyError,
     UnauthorizedUser,
+    WrongKeyError,
 )
-from flask import current_app, jsonify, request, session
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from psycopg2.errors import UniqueViolation
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm.session import Session
-
-from app.configs.database import db
-from app.exceptions.generic_exception import IdNotFound, UnauthorizedUser
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
@@ -22,20 +15,45 @@ from app.services import serialize_products_svc
 from app.services.query_service import create_svc
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_sqlalchemy import BaseQuery, Pagination
+from ipdb import set_trace
 from psycopg2.errors import UniqueViolation
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from flask_sqlalchemy import BaseQuery, Pagination
-from app.services.query_service import create_svc, filter_svc, get_by_id_svc, update_svc
+from sqlalchemy.orm.session import Session
 
 
 @jwt_required()
 def create_one_product() -> dict:
     user = get_jwt_identity()
     session: Session = db.session
-
     data = request.get_json()
+
+    fields = [
+        "name",
+        "description",
+        "sale_price",
+        "cost_price",
+        "unit_type",
+        "url_img",
+        "establieshment_id",
+        "categories",
+    ]
+
+    expected = [
+        "name",
+        "sale_price",
+        "cost_price",
+        "unit_type",
+        "establieshment_id",
+        "categories",
+    ]
+
+    wrong_key = set(data.keys()).difference(fields)
+
+    missing_key = set(expected).difference(data.keys())
+
     categories = data.pop("categories")
 
     establishment = EstablishmentModel.query.filter(
@@ -46,15 +64,32 @@ def create_one_product() -> dict:
     ).one_or_none()
 
     try:
-        if not establishment:
+        if not establishment and user.id != 1:
             raise UnauthorizedUser
+        if wrong_key:
+            raise WrongKeyError
+        if missing_key:
+            raise MissingKeyError
 
         product = create_svc(ProductModel, data)
+
     except UnauthorizedUser:
         session.rollback()
         return {
             "error": "you need to be the owner of the establishment to register a product."
         }, HTTPStatus.UNAUTHORIZED
+    except MissingKeyError:
+        session.rollback()
+        return {
+            "expected keys": list(expected),
+            "missing key(s)": list(missing_key),
+        }, HTTPStatus.BAD_REQUEST
+    except WrongKeyError:
+        session.rollback()
+        return {
+            "accepted keys": list(fields),
+            "wrong key(s)": list(wrong_key),
+        }, HTTPStatus.BAD_REQUEST
     except IntegrityError as exc:
         isinstance(exc.orig, UniqueViolation)
         session.rollback()
@@ -66,9 +101,9 @@ def create_one_product() -> dict:
 
             create_svc(ProductCategory, new_pc_data)
 
-        data.update({"categories": categories})
+        response = serialize_products_svc([product])
 
-        return jsonify(data), HTTPStatus.OK
+        return jsonify(response), HTTPStatus.OK
     finally:
         session.close()
 
@@ -102,7 +137,7 @@ def get_all_products(establishment_id: int) -> dict:
         ).all()
 
     try:
-        if not establishment:
+        if not establishment and user.id != 1:
             raise UnauthorizedUser
 
         if not products:
@@ -146,7 +181,7 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
 
     for product in products:
         for c in product.categories:
-            if category in c.name:
+            if category.title() in c.name:
                 product_data = {
                     "id": product.id,
                     "name": product.name,
@@ -162,7 +197,7 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
                 output.append(product_data)
 
     try:
-        if not establishment:
+        if not establishment and user.id != 1:
             raise UnauthorizedUser
 
         if not output:
@@ -177,73 +212,100 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
     else:
         return jsonify(output), HTTPStatus.OK
 
+
 @jwt_required()
 def patch_product(establishment_id: int, product_id: int) -> dict:
-    data = request.get_json()
-    category = data.pop('categories')
     session: Session = db.session
-    query = session.query(ProductModel)
     user = get_jwt_identity()
+    data = request.get_json()
 
-    
-    establishment = EstablishmentModel.query.filter(and_(EstablishmentModel.id == establishment_id, EstablishmentModel.user_id == user['id'])).one_or_none()
+    fields = [
+        "name",
+        "description",
+        "sale_price",
+        "cost_price",
+        "unit_type",
+        "url_img",
+        "establieshment_id",
+        "categories",
+    ]
 
-    product = query.filter(and_(ProductModel.id == product_id, ProductModel.establieshment_id == establishment_id)).all()
+    wrong_key = set(data.keys()).difference(fields)
+
+    request_categories = data.get("categories")
+    if request_categories:
+        data.pop("categories")
+
+    establishment = EstablishmentModel.query.filter(
+        and_(
+            EstablishmentModel.id == establishment_id,
+            EstablishmentModel.user_id == user["id"],
+        )
+    ).one_or_none()
+
+    all_categories_name = [c.name for c in CategoryModel.query.all()]
+
+    for name in request_categories:
+        if not name in all_categories_name:
+            return {"error": "category type not acepted"}, HTTPStatus.NOT_FOUND
+
+    product: ProductModel = ProductModel.query.filter(
+        and_(
+            ProductModel.id == product_id,
+            ProductModel.establieshment_id == establishment_id,
+        )
+    ).first()
 
     try:
-        if not establishment:
+        if not establishment and user.id != 1:
             raise UnauthorizedUser
+
+        for name in request_categories:
+            if not name in all_categories_name:
+                raise TypeError
+
+        if wrong_key:
+            raise WrongKeyError
+
         if not product:
-            raise IndexError
-
-        # update = update_svc(ProductModel, product_id, data) 
-
-        response = get_by_id_svc(ProductModel, product_id)
+            raise FilterError
 
         for key, value in data.items():
-            setattr(response, key, value)
+            setattr(product, key, value)
+            session.commit()
 
-        if not response:
-            raise IdNotFound({"error": f"id {id} not found"}, HTTPStatus.BAD_REQUEST)
+        # categorias que serão mocadas
+        products_categories_list = ProductCategory.query.filter(
+            ProductCategory.product_id == product_id
+        ).all()
 
-        session.add(response)
-        session.commit()
+        if request_categories:
+            for product_category in products_categories_list:
+                session.delete(product_category)
+                session.commit()
 
+            for name in request_categories:
+                category = CategoryModel.query.filter_by(name=name).first()
 
-        print('*' * 10)
+                create_svc(
+                    ProductCategory,
+                    {"product_id": product.id, "category_id": category.id},
+                )
 
+        response = serialize_products_svc([product])
 
-        # response = serialize_products_svc(list(update.__dict__))
-        print(response)
+        return jsonify(response), HTTPStatus.OK
 
-
-    except IndexError:
-        return {'error': 'error'}
     except UnauthorizedUser:
-        return {'error': 'Unauthorized user'}
-
-    print('*' * 10)
-    return jsonify(response)
-
-    # try:
-    #     products = jsonify(
-    #         query.filter_by(establieshment_id=establishment_id, id=product_id).first()
-    #     )
-    #     val_prod = products.get_json()
-
-    #     if val_prod:
-    #         for key, value in val_prod.items():
-    #             if key == "establieshment_id":
-    #                 establishment_product_id = value
-    #     else:
-    #         raise IdNotFound
-
-    #     if establishment_product_id == establishment_id:
-    #         update = update_svc(ProductModel, product_id, data)
-
-    #         return jsonify(update), 200
-
-    # except IdNotFound:
-    #     return jsonify(error="Product ID doesn't exists."), 400
-    # except IntegrityError:
-    #     return jsonify(error="Product ID already exists."), 400
+        return {
+            "error": "you need to be the owner of the establishment to register a product."
+        }, HTTPStatus.UNAUTHORIZED
+    except WrongKeyError:
+        return {
+            "accepted keys": list(fields),
+            "wrong key(s)": list(wrong_key),
+        }, HTTPStatus.BAD_REQUEST
+    except TypeError:
+        return {"error": "category type not acepted"}, HTTPStatus.BAD_REQUEST
+    except FilterError:
+        return {"error": "product not found."}, HTTPStatus.NOT_FOUND

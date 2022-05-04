@@ -89,6 +89,7 @@ def get_all_establishments():
     establishments = (
         UserModel.query.filter(UserModel.email.like(user_email)).one().establishments
     )
+
     if establishments == []:
         return {"error": "You don't have any establishment"}, HTTPStatus.BAD_REQUEST
 
