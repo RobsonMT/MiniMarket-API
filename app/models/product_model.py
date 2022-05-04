@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from unicodedata import category
 
 from sqlalchemy import Column, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import relationship
@@ -22,7 +23,7 @@ class ProductModel(db.Model):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False, unique=True)
+    name = Column(String(100), nullable=False)
     description = Column(String)
     sale_price = Column(Numeric(asdecimal=True), nullable=False)
     cost_price = Column(Numeric(asdecimal=True), nullable=False)
@@ -31,5 +32,8 @@ class ProductModel(db.Model):
     establieshment_id = Column(Integer, ForeignKey("establishments.id"), nullable=False)
 
     categories = relationship(
-        "CategoryModel", secondary="product_categories", back_populates="products"
+        "CategoryModel",
+        secondary="product_categories",
+        backref="categories",
+        lazy="dynamic",
     )

@@ -1,7 +1,9 @@
 from http import HTTPStatus
 
 from flask import current_app
-from app.exceptions import IdNotFound, TableEmpty, FilterError
+from ipdb import set_trace
+
+from app.exceptions import FilterError, IdNotFound, TableEmpty
 
 
 def get_all_svc(Model, order=None):
@@ -21,19 +23,21 @@ def get_by_id_svc(model, id):
         raise IdNotFound({"error": f"id {id} not found"}, HTTPStatus.BAD_REQUEST)
     return response
 
+
 def filter_svc(Model, fields):
     # fields in Object
     session = current_app.db.session
-    
-    founds  = session.query(Model).filter_by(**fields).all()
+
+    founds = session.query(Model).filter_by(**fields).all()
+
     if founds:
         return founds
     else:
         raise FilterError(f"data not found")
-    
-def create_svc(Model, data):
 
+def create_svc(Model, data):
     session = current_app.db.session
+
     new_data = Model(**data)
     session.add(new_data)
     session.commit()

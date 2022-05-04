@@ -1,16 +1,13 @@
-from dataclasses import dataclass
-
 from sqlalchemy import Column, ForeignKey, Integer
 
 from app.configs.database import db
 
 
-# @dataclass
 class ProductCategory(db.Model):
 
-    # id: int
-    # product_id: int
-    # category_id: int
+    id: int
+    product_id: int
+    category_id: int
 
     __tablename__ = "product_categories"
 

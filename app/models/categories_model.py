@@ -9,9 +9,9 @@ from app.configs.database import db
 @dataclass
 class CategoryModel(db.Model):
 
-    id = int
-    name = str
-    url_img = str
+    id: int
+    name: str
+    url_img: str
 
     __tablename__ = "categories"
 
@@ -19,6 +19,9 @@ class CategoryModel(db.Model):
     name = Column(String(100), nullable=False, unique=True)
     url_img = Column(String)
 
-    products = relationship(
-        "ProductModel", secondary="product_categories", back_populates="categories"
-    )
+    # products = relationship(
+    #     "ProductModel",
+    #     secondary="product_categories",
+    #     back_populates="categories",
+    #     lazy="joined",
+    # )
