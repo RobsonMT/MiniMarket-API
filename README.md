@@ -65,7 +65,11 @@ Este é um exemplo de como configurar e rodar a aplicação localmente, siga os 
 ### Pre-requisitos
 
 Instale os pacotes contidos no `requirements.txt` através do comando:
+<br />
+
 `pip install -r requirements.txt`
+
+<br />
 
 ## Recursos adicionais
 
