@@ -57,17 +57,35 @@ Tecnologias utilizadas na construção dessa aplicação:
 
 ## Instruções
 
-Este é um exemplo de como configurar e rodar a aplicação localmente, siga os seguintes passos:
+Este é um guia de como configurar e rodar a aplicação localmente, siga os seguintes passos:
 
 ### Instalação
 
 Clone o repositório em sua máquina:
 <br />
 
-`git clone git@github.com:RobsonMT/MiniMarket-API.git` via SSH
+Via SSH:
 <br />
 
-`git clone https://github.com/RobsonMT/MiniMarket-API.git` via HTTPS
+`git clone git@github.com:RobsonMT/MiniMarket-API.git` 
+<br />
+
+Via HTTPS:
+<br />
+
+`git clone https://github.com/RobsonMT/MiniMarket-API.git` 
+<br />
+
+Crie um ambiente virtual (venv) para seus pacotes pelo comando:
+<br />
+
+`<filepath>$ python -m venv venv`
+<br />
+
+Ative o venv pelo comando:
+<br />
+
+`$ source venv/bin/activate`
 <br />
 
 Instale os pacotes contidos no `requirements.txt` através do comando:
