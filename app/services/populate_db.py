@@ -1,8 +1,8 @@
 from app.services import query_service, query_product_service
-from app.models import CategoryModel, ProductModel, ProductCategory
+from app.models import CategoryModel, ProductModel, ProductCategory, PaymentModel
 from flask import current_app
 from ipdb import set_trace
-def populate_categories():
+def populate_categories_and_payments():
     categories = [
     {
         "name": "Hortifruti",
@@ -50,7 +50,14 @@ def populate_categories():
 ]
     for category in categories:
         query_service.create_svc(CategoryModel, category)
-
+    payments =  [{
+        "form_of_payment": "A vista",
+    },{
+        "form_of_payment": "Crediário",
+    } ] 
+    for payment in payments:
+        query_service.create_svc(PaymentModel, payment)
+     
 def populate_products(establieshment_id):
     session = current_app.db.session
 

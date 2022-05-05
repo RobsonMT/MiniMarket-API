@@ -2,7 +2,7 @@ from http import HTTPStatus
 from ipdb import set_trace
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.services.populate_db import populate_categories, populate_products
+from app.services.populate_db import populate_categories_and_payments
 from app.decorators import validate
 from app.exceptions.generic_exception import (
     GenericKeyError,
@@ -62,16 +62,14 @@ def post_establishment(user_id):
             return {"error":"Address already exists"}, 409  
         else:
 
-            new_address = create_svc(AddressModel, address)
+            create_svc(AddressModel, address)
             data["user_id"] = user_id
             data["name"] = data["name"].title()
             data["address_id"] = filter_establishement(AddressModel, address)[0].id
             new_establishment = create_svc(EstablishmentModel, data)
 
             if len(CategoryModel.query.all()) == 0:
-                populate_categories()
-            populate_products(new_establishment.id)
-            # set_trace()
+                populate_categories_and_payments()
         return jsonify(new_establishment), HTTPStatus.CREATED
 
     except GenericKeyError as err:
