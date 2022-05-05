@@ -300,7 +300,7 @@ Cria um novo produto no estabelecimento.
  "cost_price":8,
  "unit_type":"kg",
  "url_img": "feerergerg",
- "establieshment_id":3,
+ "establishment_id":3,
  "categories": []
 }
 ```

@@ -2,15 +2,19 @@ from datetime import timedelta
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import (create_access_token, get_jwt_identity,
-                                jwt_required)
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
-from app.exceptions import AttributeTypeError, DisabledAccount, UnauthorizedUser, MissingKeyError, CellphoneAlreadyExists
+from app.exceptions import (
+    AttributeTypeError,
+    CellphoneAlreadyExists,
+    DisabledAccount,
+    MissingKeyError,
+    UnauthorizedUser,
+)
 from app.models import UserModel
-from app.services.query_regex import regex_checker
 
 
 def signin():
@@ -49,10 +53,11 @@ def signup():
         if len(missing_keys) > 0:
             raise MissingKeyError
 
-        valid_if_cellphone_exists = UserModel.query.filter_by(contact=data["contact"]).all()
-        if len(valid_if_cellphone_exists) >0:
+        valid_if_cellphone_exists = UserModel.query.filter_by(
+            contact=data["contact"]
+        ).all()
+        if len(valid_if_cellphone_exists) > 0:
             raise CellphoneAlreadyExists
-
 
         user = UserModel(**data)
         session.add(user)
@@ -61,16 +66,27 @@ def signup():
         data.pop("password")
 
         return jsonify(data), HTTPStatus.CREATED
-    except UnauthorizedUser :
-        return {"Error": "Unauthorized user. You need to be an admin to do it!"}, HTTPStatus.UNAUTHORIZED 
+    except UnauthorizedUser:
+        return {
+            "Error": "Unauthorized user. You need to be an admin to do it!"
+        }, HTTPStatus.UNAUTHORIZED
     except MissingKeyError:
-        return jsonify({"obrigatory keys": obrigatory_keys, "optional_keys":['avatar'], "keys_missing":missing_keys}), HTTPStatus.BAD_REQUEST
+        return (
+            jsonify(
+                {
+                    "obrigatory keys": obrigatory_keys,
+                    "optional_keys": ["avatar"],
+                    "keys_missing": missing_keys,
+                }
+            ),
+            HTTPStatus.BAD_REQUEST,
+        )
     except CellphoneAlreadyExists:
-        return {"Error":"The contact already exists"}, 409
+        return {"Error": "The contact already exists"}, 409
     except IntegrityError:
         session.rollback()
         return {"error": "user already exists!"}, HTTPStatus.CONFLICT
-        
+
     finally:
         session.close()
 

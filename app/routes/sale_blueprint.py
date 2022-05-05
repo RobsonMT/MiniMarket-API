@@ -2,10 +2,14 @@ from flask import Blueprint
 
 from app.controllers import sale_controller
 
-bp_sales = Blueprint("bp_sales", __name__, url_prefix="/sales")
+bp_sales = Blueprint("bp_sales", __name__)
 
 
-bp_sales.get("client/<int:client_id>")(sale_controller.get_sales)
-bp_sales.get("<int:id>")(sale_controller.get_sale_by_id)
-bp_sales.post("")(sale_controller.post_sale)
-bp_sales.patch("<int:id>")(sale_controller.patch_sale)
+bp_sales.post("/sales")(sale_controller.post_sale)
+bp_sales.get("/establishment/<int:establishment_id>/sales")(sale_controller.get_sales)
+bp_sales.get("/establishment/<int:establishment_id>/sales/<int:id>")(
+    sale_controller.get_sale_by_id
+)
+bp_sales.patch("/establishment/<int:establishment_id>/sales/<int:sale_id>")(
+    sale_controller.patch_sale
+)

@@ -1,18 +1,21 @@
+from bdb import set_trace
 from http import HTTPStatus
 
-from flask import jsonify, request, session
+from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_sqlalchemy import BaseQuery, Pagination
 from psycopg2.errors import UniqueViolation
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-from app.exceptions.generic_exception import (MissingKeyError,
-                                              UnauthorizedUser, WrongKeyError)
+from app.exceptions.generic_exception import (
+    MissingKeyError,
+    UnauthorizedUser,
+    WrongKeyError,
+)
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
@@ -34,7 +37,7 @@ def create_one_product() -> dict:
         "cost_price",
         "unit_type",
         "url_img",
-        "establieshment_id",
+        "establishment_id",
         "categories",
     ]
 
@@ -43,32 +46,30 @@ def create_one_product() -> dict:
         "sale_price",
         "cost_price",
         "unit_type",
-        "establieshment_id",
+        "establishment_id",
         "categories",
     ]
 
     wrong_key = set(data.keys()).difference(fields)
 
     missing_key = set(expected).difference(data.keys())
-    
-    try:
-        if missing_key:
-            raise MissingKeyError
-            
+
+    request_categories = data.get("categories")
+    if request_categories:
         categories = data.pop("categories")
 
-        establishment = EstablishmentModel.query.filter(
+    establishment = EstablishmentModel.query.filter(
+        and_(
+            EstablishmentModel.id == data.get("establishment_id"),
+            EstablishmentModel.user_id == user["id"],
+        ),
+    ).one_or_none()
 
-            and_(
-                EstablishmentModel.id == data.get("establieshment_id"),
-                EstablishmentModel.user_id == user["id"],
-            ),
-        ).one_or_none()
-        if not establishment and user['id'] == 1:
+    try:
+        if not establishment or user["id"] == 1:
             raise UnauthorizedUser
         if wrong_key:
             raise WrongKeyError
-       
 
         product = create_svc(ProductModel, data)
 
@@ -131,12 +132,10 @@ def get_all_products(establishment_id: int) -> dict:
         )
 
     else:
-        products = ProductModel.query.filter_by(
-            establieshment_id=establishment_id
-        ).all()
+        products = ProductModel.query.filter_by(establishment_id=establishment_id).all()
 
     try:
-        if not establishment and user.id != 1:
+        if not establishment and user["id"] != 1:
             raise UnauthorizedUser
 
         if not products:
@@ -168,7 +167,7 @@ def get_product_by_id(establishment_id: int, product_id: int) -> dict:
 
     product = ProductModel.query.filter(
         and_(
-            ProductModel.establieshment_id == establishment_id,
+            ProductModel.establishment_id == establishment_id,
             ProductModel.id == product_id,
         )
     ).all()
@@ -204,7 +203,7 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
     ).one_or_none()
 
     products = ProductModel.query.filter(
-        ProductModel.establieshment_id == establishment_id,
+        ProductModel.establishment_id == establishment_id,
     ).all()
 
     output = []
@@ -220,14 +219,14 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
                     "cost_price": product.cost_price,
                     "unit_type": product.unit_type,
                     "url_img": product.url_img,
-                    "establieshment_id": product.establieshment_id,
+                    "establishment_id": product.establishment_id,
                     "categories": [c.name for c in product.categories],
                 }
 
                 output.append(product_data)
 
     try:
-        if not establishment and user.id != 1:
+        if not establishment and user["id"] != 1:
             raise UnauthorizedUser
 
         if not output:
@@ -256,7 +255,7 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
         "cost_price",
         "unit_type",
         "url_img",
-        "establieshment_id",
+        "establishment_id",
         "categories",
     ]
 
@@ -266,6 +265,12 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
     if request_categories:
         data.pop("categories")
 
+        all_categories_name = [c.name for c in CategoryModel.query.all()]
+
+        for name in request_categories:
+            if not name in all_categories_name:
+                return {"error": "category type not acepted"}, HTTPStatus.NOT_FOUND
+
     establishment = EstablishmentModel.query.filter(
         and_(
             EstablishmentModel.id == establishment_id,
@@ -273,26 +278,16 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
         )
     ).one_or_none()
 
-    all_categories_name = [c.name for c in CategoryModel.query.all()]
-
-    for name in request_categories:
-        if not name in all_categories_name:
-            return {"error": "category type not acepted"}, HTTPStatus.NOT_FOUND
-
     product: ProductModel = ProductModel.query.filter(
         and_(
             ProductModel.id == product_id,
-            ProductModel.establieshment_id == establishment_id,
+            ProductModel.establishment_id == establishment_id,
         )
     ).first()
 
     try:
-        if not establishment and user.id != 1:
+        if not establishment and user["id"] != 1:
             raise UnauthorizedUser
-
-        for name in request_categories:
-            if not name in all_categories_name:
-                raise TypeError
 
         if wrong_key:
             raise WrongKeyError
@@ -316,11 +311,11 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
 
             for name in request_categories:
                 category = CategoryModel.query.filter_by(name=name).first()
-
-                create_svc(
-                    ProductCategory,
-                    {"product_id": product.id, "category_id": category.id},
-                )
+                new_product_category = {
+                    "product_id": product.id,
+                    "category_id": category.id,
+                }
+                create_svc(ProductCategory, new_product_category)
 
         response = serialize_products_svc([product])
 
@@ -335,7 +330,5 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
             "accepted keys": list(fields),
             "wrong key(s)": list(wrong_key),
         }, HTTPStatus.BAD_REQUEST
-    except TypeError:
-        return {"error": "category type not acepted"}, HTTPStatus.BAD_REQUEST
     except FilterError:
         return {"error": "product not found."}, HTTPStatus.NOT_FOUND
