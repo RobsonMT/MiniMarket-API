@@ -5,14 +5,25 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.decorators import validate
-from app.exceptions.generic_exception import (GenericKeyError, IdNotFound,
-                                              UnauthorizedUser)
+from app.exceptions.generic_exception import (
+    GenericKeyError,
+    IdNotFound,
+    UnauthorizedUser,
+)
 from app.models import AddressModel, EstablishmentModel, UserModel
 from app.services.query_establishment_service import (
-    keys_address, keys_establishment, missing_keys_address,
-    missing_keys_establishment)
-from app.services.query_service import (create_svc, filter_svc, get_all_svc,
-                                        get_by_id_svc, update_svc)
+    keys_address,
+    keys_establishment,
+    missing_keys_address,
+    missing_keys_establishment,
+)
+from app.services.query_service import (
+    create_svc,
+    filter_svc,
+    get_all_svc,
+    get_by_id_svc,
+    update_svc,
+)
 
 
 @jwt_required()
