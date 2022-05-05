@@ -248,21 +248,37 @@ Cria um novo estabelecimento.
 
 `/api/establishments/user/<int:user_id>`
 
-## GET
+## GET all establishments
+
+Retorna todos os estabelecimentos do usuário.
 
 `/api/establishments`
 
 ## GET one establishment
 
+Retorna o estabelecimento do usuário pelo id do estabelecimento.
+
 `/api/establishments/<int:id>`
 
 ## GET establishment by name
+
+Retorna o estabelecimento do usuário pelo id do estabelecimento.
 
 `/api/establishments/name/<name>`
 
 ## PATCH establishment
 
+Atualiza o estabelecimento
+
 `/api/establishments/<int:id>`
+
+```sh
+    {
+    "name": "Mercearia",
+    "url_logo": ""
+
+    }
+```
 
 <br />
 <br />
@@ -273,23 +289,47 @@ Rota de produtos.
 
 ## POST
 
+Cria um novo produto no estabelecimento.
+
 `/api/establishments/products`
 
-## GET
+```sh
+{
+"name": "Batata",
+"description": "batata frita",
+"sale_price": 12,
+ "cost_price":8,
+ "unit_type":"kg",
+ "url_img": "feerergerg",
+ "establieshment_id":3,
+ "categories": []
 
-`/api/establishments/<int:establishment_id>/products`
+}
+```
 
-## GET
+## GET products
 
-`/api/establishments/<int:establishment_id>/products/<int:product_id>`
+Retorna os produtos do estabelecimento (id).
 
-## GET
+`/api/establishments/<establishment_id>/products`
 
-`/api/establishments/<int:establishment_id>/products/query`
+## GET product by id
 
-## PATCH
+Retorna o produto (id) do estabelecimento
 
-`/api/establishments/<int:establishment_id>/products/<int:product_id>`
+`/api/establishments/<establishment_id>/products/<product_id>`
+
+## GET product query
+
+Retorna o produto pesquisado.
+
+`/api/establishments/<establishment_id>/products/query`
+
+## PATCH product
+
+Atualiza o produto do estabelecimento.
+
+`/api/establishments/<establishment_id>/products/<product_id>`
 <br />
 <br />
 
@@ -297,19 +337,27 @@ Rota de produtos.
 
 Rota de vendas.
 
-## GET
+## GET sale
 
-`/api/sales/<int:id>`
+Retorna a venda por id.
 
-## GET
+`/api/sales/<id>`
 
-`/api/sales/client/<int:client_id>`
+## GET sale by client
 
-## POST
+Retorna a venda por cliente
+
+`/api/sales/client/<client_id>`
+
+## POST sale
+
+Cria nova venda.
 
 `/api/sales`
 
-## PATCH
+## PATCH sale
+
+Atualiza a venda (id).
 
 `/api/sales/<int:id>`
 
