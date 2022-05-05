@@ -334,7 +334,7 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
 
 def get_all_categories():
     try:
-        return get_all_svc(CategoryModel)
+        return jsonify(get_all_svc(CategoryModel)), 200
     except:
         pass
     
