@@ -22,8 +22,8 @@ class SaleModel(db.Model):
     __tablename__ = "sales"
 
     id = Column(Integer, primary_key=True)
-    date = Column(DateTime)  # ALTERAR DEFAULT default=dt.now()
-    paid_date = Column(DateTime, nullable=False)  # ALTERAR DEFAULT
+    date = Column(DateTime, default=dt.now())
+    paid_date = Column(DateTime, nullable=False)
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     payment_id = Column(Integer, ForeignKey("payments.id"), nullable=False)
     sale_total = Column(Numeric(asdecimal=True), nullable=False)
