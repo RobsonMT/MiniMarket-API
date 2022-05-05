@@ -101,6 +101,8 @@ Instale os pacotes contidos no `requirements.txt` através do comando:
 
 ## Rotas
 
+Abaixo descritas as respectivas rotas presentes nessa aplicação.
+
 <br />
 <br />
 
