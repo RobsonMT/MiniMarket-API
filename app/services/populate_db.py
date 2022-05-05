@@ -1,7 +1,7 @@
 from app.services import query_service, query_product_service
 from app.models import CategoryModel, ProductModel, ProductCategory
 from flask import current_app
-
+from ipdb import set_trace
 def populate_categories():
     categories = [
     {
@@ -51,7 +51,7 @@ def populate_categories():
     for category in categories:
         query_service.create_svc(CategoryModel, category)
 
-def populate_products(establishment_id):
+def populate_products(establieshment_id):
     session = current_app.db.session
 
     products = [
@@ -63,7 +63,7 @@ def populate_products(establishment_id):
             "unit_type": "un",
             "url_img": "https://zonasul.vtexassets.com/arquivos/ids/3045025/VF4qT-qqCUAAAAAAAAHLtQ.jpg?v=637792744791970000",
             "categories": ["Hortifruti"],
-            "establishment_id": establishment_id
+            "establieshment_id": establieshment_id
         },{
             "name": "Amac C Uau 1l Lav Frescor",
             "description": "Amac C Uau 1l Lav Frescor",
@@ -72,7 +72,7 @@ def populate_products(establishment_id):
             "unit_type": "un",
             "url_img": "https://s3.amazonaws.com/produtos.vipcommerce.com.br/250x250/faa51489-f135-4e57-999a-dfa27f9abff7.jpg",
             "categories": ["Produtos de limpeza"],
-            "establishment_id": establishment_id
+            "establieshment_id": establieshment_id
         },{
             "name": "Chocolate Meio Amargo Com Amêndoas Garoto Talento Pacote 85g",
             "description": "Chocolate Meio Amargo Com Amêndoas Garoto Talento Pacote 85g",
@@ -81,18 +81,18 @@ def populate_products(establishment_id):
             "unit_type": "un",
             "url_img": "https://images-americanas.b2w.io/produtos/2811326856/imagens/chocolate-garoto-talento-meio-amargo-amendoas-com-90g/2811326901_1_xlarge.jpg",
             "categories": ["Biscoitos e Chocolates"],
-            "establishment_id": establishment_id
+            "establieshment_id": establieshment_id
         }
     ]
     
     for product in products:
         categories = product.pop('categories')
         
+        product_id = query_service.create_svc(ProductModel, product).id
+
         for category in categories:
             category_id = session.query(CategoryModel).filter_by(name=category).first().id
-            
-            data = {"product_id":product.id, "category_id": category_id}
+            data = {"product_id":product_id, "category_id": category_id}
             
             query_service.create_svc(ProductCategory, data)
                 
-        query_service.create_svc(ProductModel, product)

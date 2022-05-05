@@ -9,7 +9,7 @@ from app.exceptions.generic_exception import (
     IdNotFound,
     UnauthorizedUser, MissingKeyError
 )
-from app.models import AddressModel, EstablishmentModel, UserModel
+from app.models import AddressModel, EstablishmentModel, UserModel, CategoryModel
 from app.services.query_establishment_service import (
     keys_address,
     keys_establishment,
@@ -23,6 +23,7 @@ from app.services.query_service import (
     get_by_id_svc,
     update_svc,
 )
+from app.services.populate_db import *
 
 
 @jwt_required()
@@ -67,6 +68,10 @@ def post_establishment(user_id):
             data["address_id"] = filter_establishement(AddressModel, address)[0].id
             new_establishment = create_svc(EstablishmentModel, data)
 
+            if len(CategoryModel.query.all()) == 0:
+                populate_categories()
+            populate_products(new_establishment.id)
+            # set_trace()
         return jsonify(new_establishment), HTTPStatus.CREATED
 
     except GenericKeyError as err:
