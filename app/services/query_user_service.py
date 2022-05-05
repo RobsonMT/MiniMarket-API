@@ -2,8 +2,12 @@ import re
 
 from flask import jsonify
 
-from app.exceptions import (CellphoneAlreadyExists, EmailAlrealyExists,
-                            InvalidCellphone, WrongKeyError)
+from app.exceptions import (
+    CellphoneAlreadyExists,
+    EmailAlrealyExists,
+    InvalidCellphone,
+    WrongKeyError,
+)
 
 from .query_service import get_all_svc
 

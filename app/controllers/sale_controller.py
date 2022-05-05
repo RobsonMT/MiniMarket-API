@@ -8,8 +8,12 @@ from sqlalchemy.orm import Session
 
 from app.configs.database import db
 from app.decorators import validate_sale_fields
-from app.exceptions import (FilterError, IdNotFound, UnauthorizedUser,
-                            establishment_exception)
+from app.exceptions import (
+    FilterError,
+    IdNotFound,
+    UnauthorizedUser,
+    establishment_exception,
+)
 from app.models import ClientModel, SaleModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.product_model import ProductModel

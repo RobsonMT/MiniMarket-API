@@ -2,14 +2,18 @@ from datetime import timedelta
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import (create_access_token, get_jwt_identity,
-                                jwt_required)
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
-from app.exceptions import (AttributeTypeError, CellphoneAlreadyExists,
-                            DisabledAccount, MissingKeyError, UnauthorizedUser)
+from app.exceptions import (
+    AttributeTypeError,
+    CellphoneAlreadyExists,
+    DisabledAccount,
+    MissingKeyError,
+    UnauthorizedUser,
+)
 from app.models import UserModel
 from app.services.query_regex import regex_checker
 
