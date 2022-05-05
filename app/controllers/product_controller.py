@@ -16,12 +16,8 @@ from app.exceptions.generic_exception import (
     UnauthorizedUser,
     WrongKeyError,
 )
-from app.models import ProductModel
-from app.models.categories_model import CategoryModel
-from app.models.establishment_model import EstablishmentModel
-from app.models.product_categories import ProductCategory
-from app.services import serialize_products_svc
-from app.services.query_service import create_svc
+from app.models import ProductModel, CategoryModel, EstablishmentModel, ProductCategory
+from app.services import serialize_products_svc, get_all_svc, create_svc
 
 
 @jwt_required()
@@ -334,3 +330,11 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
         }, HTTPStatus.BAD_REQUEST
     except FilterError:
         return {"error": "product not found."}, HTTPStatus.NOT_FOUND
+
+
+def get_all_categories():
+    try:
+        return jsonify(get_all_svc(CategoryModel)), 200
+    except:
+        pass
+    

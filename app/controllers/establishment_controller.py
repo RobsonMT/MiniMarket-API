@@ -1,14 +1,13 @@
-from audioop import add
 from http import HTTPStatus
-
+from ipdb import set_trace
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-
+from app.services.populate_db import populate_categories, populate_products
 from app.decorators import validate
 from app.exceptions.generic_exception import (
     GenericKeyError,
     IdNotFound,
-    UnauthorizedUser,
+    UnauthorizedUser, MissingKeyError
 )
 from app.models import AddressModel, EstablishmentModel, UserModel
 from app.services.query_establishment_service import (
@@ -16,10 +15,10 @@ from app.services.query_establishment_service import (
     keys_establishment,
     missing_keys_address,
     missing_keys_establishment,
+    filter_establishement
 )
 from app.services.query_service import (
     create_svc,
-    filter_svc,
     get_all_svc,
     get_by_id_svc,
     update_svc,
@@ -40,45 +39,43 @@ def post_establishment(user_id):
         return {
             "error": "You don't have access to this route because you are not admin"
         }, HTTPStatus.BAD_REQUEST
-
-    address = data.pop("address")
-
+    
     try:
+        
+        if "address" not in data.keys():
+            raise MissingKeyError
+        address = data.pop("address")
+
+
         keys_address(data=address)
         keys_establishment(data=data)
-
         missing_keys_address(data=address)
         missing_keys_establishment(data=data)
+
+        for key, value in data.items():
+        
+            if filter_establishement(EstablishmentModel, {key:value}):
+                return {"error":f"{key} already exists"}, 409
+        
+        if filter_establishement(AddressModel, address):
+            return {"error":"Address already exists"}, 409  
+        else:
+
+            new_address = create_svc(AddressModel, address)
+            data["user_id"] = user_id
+            data["name"] = data["name"].title()
+            data["address_id"] = filter_establishement(AddressModel, address)[0].id
+            new_establishment = create_svc(EstablishmentModel, data)
+
+        return jsonify(new_establishment), HTTPStatus.CREATED
+
     except GenericKeyError as err:
         return err.args[0], err.args[1]
-
-    data["name"] = data["name"].title()
-    address = data.pop("address")
-
-    try:
-        filter_svc(Model=AddressModel, fields=address)
-        return {"error": "Address already registered"}, HTTPStatus.BAD_REQUEST
-    except:
-        ...
-
-    try:
-        filter_svc(Model=EstablishmentModel, fields=data)
-        return {"error": "Establishment already registered"}, HTTPStatus.BAD_REQUEST
-    except:
-        ...
-
-    data["user_id"] = user_id
-
-    create_svc(AddressModel, address)
-
-    data["address_id"] = (
-        AddressModel.query.filter_by(number=address.get("number")).first().id
-    )
-
-    new_establishment = create_svc(EstablishmentModel, data)
-
-    return jsonify(new_establishment), HTTPStatus.CREATED
-
+    except MissingKeyError:
+        return {"Error": "Missing establishment address", "address example": {  "street":"street name", 
+    "number": "establishment number",
+    "zip_code":"establishment zip code",
+    "district":"establishment district"}}, HTTPStatus.BAD_REQUEST
 
 @jwt_required()
 @validate(EstablishmentModel)
