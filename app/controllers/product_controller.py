@@ -67,8 +67,6 @@ def create_one_product() -> dict:
             raise UnauthorizedUser
         if wrong_key:
             raise WrongKeyError
-        if missing_key:
-            raise MissingKeyError
 
         product = create_svc(ProductModel, data)
 

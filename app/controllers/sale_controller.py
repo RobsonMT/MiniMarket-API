@@ -63,10 +63,14 @@ def get_sale_by_id(establishment_id, id):
     try:
         sale = get_by_id_svc(SaleModel, id)
     except:
-        return {"error": f"The sale with the id {id} did not exist"}, HTTPStatus.BAD_REQUEST
-    
+        return {
+            "error": f"The sale with the id {id} did not exist"
+        }, HTTPStatus.BAD_REQUEST
+
     if get_by_id_svc(ClientModel, sale.client_id).establishment_id != establishment_id:
-        return {"error": "The informed establishment does not hold the past sale"}, HTTPStatus.BAD_REQUEST
+        return {
+            "error": "The informed establishment does not hold the past sale"
+        }, HTTPStatus.BAD_REQUEST
 
     return {
         "id": sale.id,
@@ -145,7 +149,6 @@ def get_sales(establishment_id):
             }
         )
 
-    
     return {"clients": serialized_clients}, HTTPStatus.OK
 
     # for sale in sales:
