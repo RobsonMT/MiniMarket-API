@@ -1,21 +1,24 @@
 from http import HTTPStatus
-from ipdb import set_trace
+
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.services.populate_db import populate_categories_and_payments
+
 from app.decorators import validate
 from app.exceptions.generic_exception import (
     GenericKeyError,
     IdNotFound,
-    UnauthorizedUser, MissingKeyError
+    MissingKeyError,
+    UnauthorizedUser,
 )
-from app.models import AddressModel, EstablishmentModel, UserModel, CategoryModel
+from app.models import AddressModel, CategoryModel, EstablishmentModel, UserModel
+from app.services.populate_db import *
+from app.services.populate_db import populate_categories_and_payments
 from app.services.query_establishment_service import (
+    filter_establishement,
     keys_address,
     keys_establishment,
     missing_keys_address,
     missing_keys_establishment,
-    filter_establishement
 )
 from app.services.query_service import (
     create_svc,
@@ -23,7 +26,6 @@ from app.services.query_service import (
     get_by_id_svc,
     update_svc,
 )
-from app.services.populate_db import *
 
 
 @jwt_required()
@@ -40,13 +42,12 @@ def post_establishment(user_id):
         return {
             "error": "You don't have access to this route because you are not admin"
         }, HTTPStatus.BAD_REQUEST
-    
+
     try:
-        
+
         if "address" not in data.keys():
             raise MissingKeyError
         address = data.pop("address")
-
 
         keys_address(data=address)
         keys_establishment(data=data)
@@ -54,12 +55,12 @@ def post_establishment(user_id):
         missing_keys_establishment(data=data)
 
         for key, value in data.items():
-        
-            if filter_establishement(EstablishmentModel, {key:value}):
-                return {"error":f"{key} already exists"}, 409
-        
+
+            if filter_establishement(EstablishmentModel, {key: value}):
+                return {"error": f"{key} already exists"}, 409
+
         if filter_establishement(AddressModel, address):
-            return {"error":"Address already exists"}, 409  
+            return {"error": "Address already exists"}, 409
         else:
 
             create_svc(AddressModel, address)
@@ -75,10 +76,16 @@ def post_establishment(user_id):
     except GenericKeyError as err:
         return err.args[0], err.args[1]
     except MissingKeyError:
-        return {"Error": "Missing establishment address", "address example": {  "street":"street name", 
-    "number": "establishment number",
-    "zip_code":"establishment zip code",
-    "district":"establishment district"}}, HTTPStatus.BAD_REQUEST
+        return {
+            "Error": "Missing establishment address",
+            "address example": {
+                "street": "street name",
+                "number": "establishment number",
+                "zip_code": "establishment zip code",
+                "district": "establishment district",
+            },
+        }, HTTPStatus.BAD_REQUEST
+
 
 @jwt_required()
 @validate(EstablishmentModel)

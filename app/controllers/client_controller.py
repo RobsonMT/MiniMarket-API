@@ -5,12 +5,8 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.decorators import validate
-from app.exceptions import (
-    CellphoneAlreadyExists,
-    IdNotFound,
-    NameAlreadyExists,
-    UnauthorizedUser,
-)
+from app.exceptions import (CellphoneAlreadyExists, IdNotFound,
+                            NameAlreadyExists, UnauthorizedUser)
 from app.models import ClientModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.user_model import UserModel

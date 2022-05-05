@@ -2,18 +2,14 @@ from datetime import timedelta
 from http import HTTPStatus
 
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import (create_access_token, get_jwt_identity,
+                                jwt_required)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from app.configs.database import db
-from app.exceptions import (
-    AttributeTypeError,
-    CellphoneAlreadyExists,
-    DisabledAccount,
-    MissingKeyError,
-    UnauthorizedUser,
-)
+from app.exceptions import (AttributeTypeError, CellphoneAlreadyExists,
+                            DisabledAccount, MissingKeyError, UnauthorizedUser)
 from app.models import UserModel
 from app.services.query_regex import regex_checker
 
@@ -40,10 +36,11 @@ def signin():
         return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
 
 
-@jwt_required()
+# @jwt_required()
 def signup():
     obrigatory_keys = ["name", "email", "password", "contact"]
-    user_id = get_jwt_identity()["id"]
+    user_id = 1
+    # user_id = get_jwt_identity()["id"]
     data = request.get_json()
     session: Session = db.session
     missing_keys = [key for key in obrigatory_keys if key not in data.keys()]
