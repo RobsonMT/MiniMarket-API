@@ -4,16 +4,18 @@ from http import HTTPStatus
 from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from sqlalchemy.exc import IntegrityError
-from app.decorators import validate_sale_fields
+from sqlalchemy.orm import Session
 
-from app.exceptions import FilterError, IdNotFound, UnauthorizedUser
-from app.models import SaleModel, sale_model
+from app.configs.database import db
+from app.decorators import validate_sale_fields
+from app.exceptions import (FilterError, IdNotFound, UnauthorizedUser,
+                            establishment_exception)
+from app.models import ClientModel, SaleModel
+from app.models.establishment_model import EstablishmentModel
 from app.models.product_model import ProductModel
 from app.models.sale_product_model import SaleProductModel
 from app.services import query_service
-from sqlalchemy.orm import Session
-from app.configs.database import db
-from app.services.query_service import create_svc
+from app.services.query_service import create_svc, get_by_id_svc
 
 
 @jwt_required()
@@ -44,12 +46,27 @@ def post_sale() -> dict:
 
 
 @jwt_required()
-def get_sale_by_id(id):
+def get_sale_by_id(establishment_id, id):
+
     try:
-        sale = query_service.get_by_id_svc(SaleModel, id)
-        print(sale)
+        establishment = get_by_id_svc(EstablishmentModel, establishment_id)
+        if (
+            get_jwt_identity()["id"] != 1
+            and get_jwt_identity()["id"] != establishment.user_id
+        ):
+            return {
+                "error": "You do not own the establishment referring to the informed customer"
+            }, HTTPStatus.BAD_REQUEST
+    except IdNotFound as err:
+        return err.args[0], err.args[1]
+
+    try:
+        sale = get_by_id_svc(SaleModel, id)
     except:
-        return {"error": "Sale (ID) doesn't exist"}, HTTPStatus.BAD_REQUEST
+        return {"error": f"The sale with the id {id} did not exist"}, HTTPStatus.BAD_REQUEST
+    
+    if get_by_id_svc(ClientModel, sale.client_id).establishment_id != establishment_id:
+        return {"error": "The informed establishment does not hold the past sale"}, HTTPStatus.BAD_REQUEST
 
     return {
         "id": sale.id,
@@ -60,7 +77,11 @@ def get_sale_by_id(id):
         "sale_total": sale.sale_total,
         "remain_to_pay": sale.remain_to_pay,
         "payment_method": sale.payment_method.form_of_payment,
-    }, 200
+        "products": [
+            get_by_id_svc(ProductModel, product.product_id).name
+            for product in SaleProductModel.query.filter_by(sale_id=sale.id).all()
+        ],
+    }, HTTPStatus.OK
 
 
 @jwt_required()
@@ -74,11 +95,73 @@ def patch_sale(id):
 
 
 @jwt_required()
-def get_sales(client_id):
+def get_sales(establishment_id):
 
-    data = {"client_id": client_id, "paid_date": None}
     try:
-        sales_found = query_service.filter_svc(SaleModel, data)
-        return jsonify(sales_found), HTTPStatus.OK
-    except FilterError:
-        return {"message": "No sales on client"}, HTTPStatus.NOT_FOUND
+        establishment = get_by_id_svc(EstablishmentModel, establishment_id)
+        if (
+            get_jwt_identity()["id"] != 1
+            and get_jwt_identity()["id"] != establishment.user_id
+        ):
+            return {
+                "error": "You do not own the establishment referring to the informed customer"
+            }, HTTPStatus.BAD_REQUEST
+    except IdNotFound as err:
+        return err.args[0], err.args[1]
+
+    clients = ClientModel.query.filter_by(establishment_id=establishment_id).all()
+
+    if clients == []:
+        return {
+            "error": "The informed establishment dont have customers"
+        }, HTTPStatus.BAD_REQUEST
+
+    serialized_clients = []
+
+    for client in clients:
+        serialized_clients.append(
+            {
+                "id": client.id,
+                "name": client.name,
+                "sales": [
+                    {
+                        "id": sale.id,
+                        "date": sale.date,
+                        "paid_date": sale.paid_date,
+                        "client_id": sale.client_id,
+                        "payment_id": sale.payment_id,
+                        "sale_total": sale.sale_total,
+                        "remain_to_pay": sale.remain_to_pay,
+                        "payment_method": sale.payment_method.form_of_payment,
+                        "products": [
+                            get_by_id_svc(ProductModel, product.product_id).name
+                            for product in SaleProductModel.query.filter_by(
+                                sale_id=sale.id
+                            ).all()
+                        ],
+                    }
+                    for sale in SaleModel.query.filter_by(client_id=client.id).all()
+                ],
+            }
+        )
+
+    
+    return {"clients": serialized_clients}, HTTPStatus.OK
+
+    # for sale in sales:
+    #     serialized_sales.append({
+    #     "id": sale.id,
+    #     "date": sale.date,
+    #     "paid_date": sale.paid_date,
+    #     "client_id": sale.client_id,
+    #     "payment_id": sale.payment_id,
+    #     "sale_total": sale.sale_total,
+    #     "remain_to_pay": sale.remain_to_pay,
+    #     "payment_method": sale.payment_method.form_of_payment,
+    #     "products" : [
+    #     get_by_id_svc(ProductModel, product.product_id).name
+    #     for product in SaleProductModel.query.filter_by(sale_id=sale.id).all()
+    # ]
+    # })
+
+    # return {"sales": serialized_sales}, HTTPStatus.OK

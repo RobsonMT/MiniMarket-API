@@ -8,13 +8,11 @@ from psycopg2.errors import UniqueViolation
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-from app.exceptions.generic_exception import (
-    MissingKeyError,
-    UnauthorizedUser,
-    WrongKeyError,
-)
+from app.exceptions.generic_exception import (MissingKeyError,
+                                              UnauthorizedUser, WrongKeyError)
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
