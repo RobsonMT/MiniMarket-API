@@ -276,7 +276,6 @@ Atualiza o estabelecimento
     {
     "name": "Mercearia",
     "url_logo": ""
-
     }
 ```
 
@@ -303,7 +302,6 @@ Cria um novo produto no estabelecimento.
  "url_img": "feerergerg",
  "establieshment_id":3,
  "categories": []
-
 }
 ```
 
@@ -354,6 +352,16 @@ Retorna a venda por cliente
 Cria nova venda.
 
 `/api/sales`
+
+```sh
+{
+	"paid_date": "25/06/2022",
+	"client_id":1,
+	"payment_id":1,
+	"sale_total":2000,
+	"remain_to_pay": 2000
+}
+```
 
 ## PATCH sale
 
