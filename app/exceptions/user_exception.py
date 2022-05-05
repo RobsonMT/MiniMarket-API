@@ -6,7 +6,7 @@ class EmailAlrealyExists(Exception):
     ...
 
 
-class CellphoneAlrealyExists(Exception):
+class CellphoneAlreadyExists(Exception):
     ...
 
 
