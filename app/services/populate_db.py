@@ -1,5 +1,6 @@
-from app.services import query_service
-from app.models import CategoryModel, ProductModel
+from app.services import query_service, query_product_service
+from app.models import CategoryModel, ProductModel, ProductCategory
+from flask import current_app
 
 def populate_categories():
     categories = [
@@ -50,7 +51,9 @@ def populate_categories():
     for category in categories:
         query_service.create_svc(CategoryModel, category)
 
-def populate_products(establishment_id:int):
+def populate_products(establishment_id):
+    session = current_app.db.session
+
     products = [
         {
             "name": "Tomate Grape Dueto Frutano 300g",
@@ -84,4 +87,12 @@ def populate_products(establishment_id:int):
     
     for product in products:
         categories = product.pop('categories')
+        
+        for category in categories:
+            category_id = session.query(CategoryModel).filter_by(name=category).first().id
+            
+            data = {"product_id":product.id, "category_id": category_id}
+            
+            query_service.create_svc(ProductCategory, data)
+                
         query_service.create_svc(ProductModel, product)
