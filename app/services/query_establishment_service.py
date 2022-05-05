@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from app.exceptions.generic_exception import GenericKeyError
-
+from flask import current_app
 
 def keys_establishment(data):
     fields = ["name", "cnpj", "contact", "url_logo"]
@@ -57,3 +57,11 @@ def missing_keys_address(data):
             },
             HTTPStatus.BAD_REQUEST,
         )
+def filter_establishement(Model, fields):
+    session = current_app.db.session
+
+    founds = session.query(Model).filter_by(**fields).all()
+
+    if founds:
+        return founds
+    return None
