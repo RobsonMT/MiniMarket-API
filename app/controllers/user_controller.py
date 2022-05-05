@@ -4,14 +4,9 @@ from flask import jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from app.decorators import validate
-from app.exceptions import (
-  IdNotFound,
-  TableEmpty,
-  UnauthorizedUser,
-)
+from app.exceptions import IdNotFound, TableEmpty, UnauthorizedUser
 from app.models.user_model import UserModel
-from app.services.query_service import ( get_all_svc, get_by_id_svc,
-                                        update_svc)
+from app.services.query_service import get_all_svc, get_by_id_svc, update_svc
 
 
 @jwt_required()
