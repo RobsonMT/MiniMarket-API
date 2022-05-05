@@ -50,7 +50,7 @@ def populate_categories():
     for category in categories:
         query_service.create_svc(CategoryModel, category)
 
-def populate_products(establishment_id):
+def populate_products(establishment_id:int):
     products = [
         {
             "name": "Tomate Grape Dueto Frutano 300g",
@@ -83,4 +83,5 @@ def populate_products(establishment_id):
     ]
     
     for product in products:
+        categories = product.pop('categories')
         query_service.create_svc(ProductModel, product)
