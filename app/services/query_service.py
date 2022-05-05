@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from flask import current_app
-from ipdb import set_trace
 
 from app.exceptions import FilterError, IdNotFound, TableEmpty
 

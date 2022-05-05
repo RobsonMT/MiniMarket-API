@@ -2,11 +2,9 @@ from http import HTTPStatus
 
 from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_required
+
 from app.decorators import validate_sale_fields
-from app.exceptions import (
-    IdNotFound,
-    UnauthorizedUser,
-)
+from app.exceptions import IdNotFound, UnauthorizedUser
 from app.exceptions.generic_exception import WrongKeyError
 from app.models import ClientModel, SaleModel
 from app.models.establishment_model import EstablishmentModel
@@ -112,7 +110,7 @@ def get_sale_by_id(establishment_id: int, id: int) -> dict:
 
 
 @jwt_required()
-def patch_sale(sale_id: int) -> dict:
+def patch_sale(client_id: int, sale_id: int) -> dict:
     user = get_jwt_identity()
     data = request.get_json()
 
@@ -130,7 +128,7 @@ def patch_sale(sale_id: int) -> dict:
 
         for establishment in establishments_of_user:
             for client in establishment.clients:
-                if client.id != data.get("client_id") and user["id"] != 1:
+                if client.id != client_id and user["id"] != 1:
                     raise UnauthorizedUser
 
         sale = update_svc(SaleModel, sale_id, data)

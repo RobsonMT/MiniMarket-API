@@ -1,4 +1,3 @@
-from bdb import set_trace
 from http import HTTPStatus
 
 from flask import jsonify, request
@@ -11,13 +10,11 @@ from sqlalchemy.orm import Session
 
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-from app.exceptions.generic_exception import (
-    MissingKeyError,
-    UnauthorizedUser,
-    WrongKeyError,
-)
-from app.models import ProductModel, CategoryModel, EstablishmentModel, ProductCategory
-from app.services import serialize_products_svc, get_all_svc, create_svc
+from app.exceptions.generic_exception import (MissingKeyError,
+                                              UnauthorizedUser, WrongKeyError)
+from app.models import (CategoryModel, EstablishmentModel, ProductCategory,
+                        ProductModel)
+from app.services import create_svc, get_all_svc, serialize_products_svc
 
 
 @jwt_required()
@@ -193,12 +190,20 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
 
     category = args.get("category", default="", type=str)
 
+    print(10 * "#")
+    print(f"{category=}")
+    print(10 * "#")
+
     establishment = EstablishmentModel.query.filter(
         and_(
             EstablishmentModel.id == establishment_id,
             EstablishmentModel.user_id == user["id"],
         ),
     ).one_or_none()
+
+    print(10 * "#")
+    print(f"{establishment=}")
+    print(10 * "#")
 
     products = ProductModel.query.filter(
         ProductModel.establieshment_id == establishment_id,
@@ -208,7 +213,7 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
 
     for product in products:
         for c in product.categories:
-            if category.title() in c.name:
+            if category.lower() in c.name.lower():
                 product_data = {
                     "id": product.id,
                     "name": product.name,
@@ -222,6 +227,10 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
                 }
 
                 output.append(product_data)
+
+    print(10 * "#")
+    print(f"{output=}")
+    print(10 * "#")
 
     try:
         if not establishment and user["id"] != 1:
@@ -337,4 +346,3 @@ def get_all_categories():
         return jsonify(get_all_svc(CategoryModel)), 200
     except:
         pass
-    
