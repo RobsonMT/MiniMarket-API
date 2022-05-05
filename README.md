@@ -49,8 +49,7 @@
         <li><a href="#SALES">SALES</a></li>
       </ul>
     </li>
-    <li><a href="#licenca">Licença</a></li>
-    <li><a href="#contato">Contato</a></li>
+    <li><a href="#sobre">Sobre</a></li>
   </ol>
 
 ## Tecnologias
@@ -370,3 +369,19 @@ Atualiza a venda (id).
 `/api/sales/<int:id>`
 
 ## Sobre
+
+Este projeto foi desenvolvido por:
+
+Bruno de Lacerda Tetzner - [@brunotetzner](https://github.com/brunotetzner)
+
+Julio Pereira- [@ElBulidur](https://github.com/ElBulidur)
+
+Robson Martins - [@RobsonMT](https://github.com/RobsonMT)
+
+Gabriel Amaral - [@Gabriel-dsAmaral](https://github.com/Gabriel-dsAmaral)
+
+Rhamon de Souza - [@rhamo1](https://github.com/rhamo1)
+
+Rafael Monteiro de Oliveira - [@raf2019](https://github.com/raf2019)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
