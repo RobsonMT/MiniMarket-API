@@ -31,7 +31,7 @@ def patch_sale(id):
     
 @jwt_required()
 def get_sales(client_id):
-
+    
     data = {"client_id": client_id, "paid_date": None}
     try:
         sales_found = query_service.filter_svc(SaleModel, data)
