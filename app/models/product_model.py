@@ -17,7 +17,7 @@ class ProductModel(db.Model):
     cost_price: float
     unit_type: str
     url_img: str
-    establieshment_id: int
+    establishment_id: int
     categories: list
 
     __tablename__ = "products"
@@ -29,7 +29,7 @@ class ProductModel(db.Model):
     cost_price = Column(Numeric(asdecimal=True), nullable=False)
     unit_type = Column(String(100), nullable=False)
     url_img = Column(String)
-    establieshment_id = Column(Integer, ForeignKey("establishments.id"), nullable=False)
+    establishment_id = Column(Integer, ForeignKey("establishments.id"), nullable=False)
 
     categories = relationship(
         "CategoryModel",

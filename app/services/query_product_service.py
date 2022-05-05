@@ -11,7 +11,7 @@ def serialize_products_svc(products):
             "cost_price": product.cost_price,
             "unit_type": product.unit_type,
             "url_img": product.url_img,
-            "establieshment_id": product.establieshment_id,
+            "establishment_id": product.establishment_id,
             "categories": [c.name for c in product.categories],
         }
 
