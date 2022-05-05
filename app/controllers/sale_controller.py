@@ -1,52 +1,75 @@
-from bdb import set_trace
 from http import HTTPStatus
 
-from flask import jsonify, request
+from flask import request
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-
-from app.configs.database import db
 from app.decorators import validate_sale_fields
-from app.exceptions import (FilterError, IdNotFound, UnauthorizedUser,
-                            establishment_exception)
+from app.exceptions import (
+    IdNotFound,
+    UnauthorizedUser,
+)
+from app.exceptions.generic_exception import WrongKeyError
 from app.models import ClientModel, SaleModel
 from app.models.establishment_model import EstablishmentModel
 from app.models.product_model import ProductModel
 from app.models.sale_product_model import SaleProductModel
-from app.services import query_service
-from app.services.query_service import create_svc, get_by_id_svc
+from app.services.query_service import create_svc, get_by_id_svc, update_svc
 
 
 @jwt_required()
 @validate_sale_fields(SaleModel)
 def post_sale() -> dict:
-    data = request.get_json()
-    # session: Session = db.session
-    request_products = data.pop("products")
     user = get_jwt_identity()
+    data = request.get_json()
+    request_products = data.pop("products")
 
-    product_id_list = [p.id for p in ProductModel.query.all()]
+    establishments_of_user = EstablishmentModel.query.filter(
+        EstablishmentModel.user_id == user["id"],
+    ).all()
 
-    #  retorna a diferença dos ids invalidos
-    requet_id_invalid = bool(set(request_products).difference(product_id_list))
+    product_id_database = [p.id for p in ProductModel.query.all()]
 
-    if requet_id_invalid:
-        return {"error": "product of request error"}
+    have_product_id_invalid = bool(
+        set(request_products).difference(product_id_database)
+    )
 
-    # try:
-    sale: SaleModel = create_svc(SaleModel, data)
-    for id in request_products:
-        new_sale_product = {"sale_id": sale.id, "product_id": id}
-        create_svc(SaleProductModel, new_sale_product)
+    try:
+        for establishment in establishments_of_user:
+            for client in establishment.clients:
+                if client.id != data.get("client_id") or user["id"] == 1:
+                    raise UnauthorizedUser
 
-    return jsonify(data), HTTPStatus.OK
-    # except:
-    #     ...
+        if have_product_id_invalid:
+            raise TypeError
+
+        sale: SaleModel = create_svc(SaleModel, data)
+
+        for id in request_products:
+            new_sale_product = {"sale_id": sale.id, "product_id": id}
+            create_svc(SaleProductModel, new_sale_product)
+
+        return (
+            {
+                "id": sale.id,
+                "date": sale.date,
+                "paid_date": sale.paid_date,
+                "client_id": sale.client_id,
+                "payment_id": sale.payment_id,
+                "sale_total": sale.sale_total,
+                "remain_to_pay": sale.remain_to_pay,
+                "payment_method": sale.payment_method.form_of_payment,
+            },
+            HTTPStatus.OK,
+        )
+    except TypeError:
+        return {"error": "product of request id not acepted"}, HTTPStatus.NOT_ACCEPTABLE
+    except UnauthorizedUser:
+        return {
+            "error": "the customer must belong to an establishment you already own"
+        }, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()
-def get_sale_by_id(establishment_id, id):
+def get_sale_by_id(establishment_id: int, id: int) -> dict:
 
     try:
         establishment = get_by_id_svc(EstablishmentModel, establishment_id)
@@ -89,18 +112,53 @@ def get_sale_by_id(establishment_id, id):
 
 
 @jwt_required()
-def patch_sale(id):
+def patch_sale(sale_id: int) -> dict:
+    user = get_jwt_identity()
     data = request.get_json()
 
+    fields = ["paid_date", "remain_to_pay"]
+
+    wrong_key = set(data.keys()).difference(fields)
+
+    establishments_of_user = EstablishmentModel.query.filter(
+        EstablishmentModel.user_id == user["id"],
+    ).all()
+
     try:
-        return query_service.update_svc(SaleModel, id, data)
+        if wrong_key:
+            raise WrongKeyError
+
+        for establishment in establishments_of_user:
+            for client in establishment.clients:
+                if client.id != data.get("client_id") and user["id"] != 1:
+                    raise UnauthorizedUser
+
+        sale = update_svc(SaleModel, sale_id, data)
+
+        return {
+            "id": sale.id,
+            "date": sale.date,
+            "paid_date": sale.paid_date,
+            "client_id": sale.client_id,
+            "sale_total": sale.sale_total,
+            "remain_to_pay": sale.remain_to_pay,
+            "payment_method": sale.payment_method.form_of_payment,
+        }, HTTPStatus.OK
+    except WrongKeyError:
+        return {
+            "accepted keys": list(fields),
+            "wrong key(s)": list(wrong_key),
+        }, HTTPStatus.BAD_REQUEST
     except IdNotFound as err:
         return err.args[0], err.args[1]
+    except UnauthorizedUser:
+        return {
+            "error": "the customer must belong to an establishment you already own"
+        }, HTTPStatus.UNAUTHORIZED
 
 
 @jwt_required()
-def get_sales(establishment_id):
-
+def get_sales(establishment_id: int) -> dict:
     try:
         establishment = get_by_id_svc(EstablishmentModel, establishment_id)
         if (
@@ -150,21 +208,3 @@ def get_sales(establishment_id):
         )
 
     return {"clients": serialized_clients}, HTTPStatus.OK
-
-    # for sale in sales:
-    #     serialized_sales.append({
-    #     "id": sale.id,
-    #     "date": sale.date,
-    #     "paid_date": sale.paid_date,
-    #     "client_id": sale.client_id,
-    #     "payment_id": sale.payment_id,
-    #     "sale_total": sale.sale_total,
-    #     "remain_to_pay": sale.remain_to_pay,
-    #     "payment_method": sale.payment_method.form_of_payment,
-    #     "products" : [
-    #     get_by_id_svc(ProductModel, product.product_id).name
-    #     for product in SaleProductModel.query.filter_by(sale_id=sale.id).all()
-    # ]
-    # })
-
-    # return {"sales": serialized_sales}, HTTPStatus.OK

@@ -11,8 +11,11 @@ from sqlalchemy.orm import Session
 
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-from app.exceptions.generic_exception import (MissingKeyError,
-                                              UnauthorizedUser, WrongKeyError)
+from app.exceptions.generic_exception import (
+    MissingKeyError,
+    UnauthorizedUser,
+    WrongKeyError,
+)
 from app.models import ProductModel
 from app.models.categories_model import CategoryModel
 from app.models.establishment_model import EstablishmentModel
@@ -34,7 +37,7 @@ def create_one_product() -> dict:
         "cost_price",
         "unit_type",
         "url_img",
-        "establieshment_id",
+        "establishment_id",
         "categories",
     ]
 
@@ -43,7 +46,7 @@ def create_one_product() -> dict:
         "sale_price",
         "cost_price",
         "unit_type",
-        "establieshment_id",
+        "establishment_id",
         "categories",
     ]
 
@@ -57,7 +60,7 @@ def create_one_product() -> dict:
 
     establishment = EstablishmentModel.query.filter(
         and_(
-            EstablishmentModel.id == data.get("establieshment_id"),
+            EstablishmentModel.id == data.get("establishment_id"),
             EstablishmentModel.user_id == user["id"],
         ),
     ).one_or_none()
@@ -129,9 +132,7 @@ def get_all_products(establishment_id: int) -> dict:
         )
 
     else:
-        products = ProductModel.query.filter_by(
-            establieshment_id=establishment_id
-        ).all()
+        products = ProductModel.query.filter_by(establishment_id=establishment_id).all()
 
     try:
         if not establishment and user["id"] != 1:
@@ -166,7 +167,7 @@ def get_product_by_id(establishment_id: int, product_id: int) -> dict:
 
     product = ProductModel.query.filter(
         and_(
-            ProductModel.establieshment_id == establishment_id,
+            ProductModel.establishment_id == establishment_id,
             ProductModel.id == product_id,
         )
     ).all()
@@ -202,7 +203,7 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
     ).one_or_none()
 
     products = ProductModel.query.filter(
-        ProductModel.establieshment_id == establishment_id,
+        ProductModel.establishment_id == establishment_id,
     ).all()
 
     output = []
@@ -218,7 +219,7 @@ def get_product_by_query_parameters(establishment_id: int) -> dict:
                     "cost_price": product.cost_price,
                     "unit_type": product.unit_type,
                     "url_img": product.url_img,
-                    "establieshment_id": product.establieshment_id,
+                    "establishment_id": product.establishment_id,
                     "categories": [c.name for c in product.categories],
                 }
 
@@ -254,7 +255,7 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
         "cost_price",
         "unit_type",
         "url_img",
-        "establieshment_id",
+        "establishment_id",
         "categories",
     ]
 
@@ -280,7 +281,7 @@ def patch_product(establishment_id: int, product_id: int) -> dict:
     product: ProductModel = ProductModel.query.filter(
         and_(
             ProductModel.id == product_id,
-            ProductModel.establieshment_id == establishment_id,
+            ProductModel.establishment_id == establishment_id,
         )
     ).first()
 

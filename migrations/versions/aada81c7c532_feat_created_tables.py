@@ -103,13 +103,13 @@ def upgrade():
         sa.Column("unit_type", sa.String(length=100), nullable=True),
         sa.Column("url_img", sa.String(), nullable=True),
         sa.Column("category_id", sa.Integer(), nullable=True),
-        sa.Column("establieshment_id", sa.Integer(), nullable=True),
+        sa.Column("establishment_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
             ["category_id"],
             ["categories.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["establieshment_id"],
+            ["establishment_id"],
             ["establishments.id"],
         ),
         sa.PrimaryKeyConstraint("id"),

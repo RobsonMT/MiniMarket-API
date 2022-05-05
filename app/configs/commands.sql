@@ -87,7 +87,7 @@ VALUES
     ('Crediário');
     
 INSERT INTO products
-    ("name", description, sale_price, cost_price, unit_type, url_img, category_id, establieshment_id)
+    ("name", description, sale_price, cost_price, unit_type, url_img, category_id, establishment_id)
 VALUES
     (
         'Banana',
