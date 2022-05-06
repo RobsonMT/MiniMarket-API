@@ -15,7 +15,7 @@ class UserModel(db.Model):
     name: str
     email: str
     contact: str
-    password_hash: str
+    # password_hash: str
     avatar: str
     created: dt
     last_access: dt

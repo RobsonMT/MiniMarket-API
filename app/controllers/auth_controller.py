@@ -40,11 +40,10 @@ def signin():
         return {"detail": "email and password missmatch"}, HTTPStatus.UNAUTHORIZED
 
 
-# @jwt_required()
+@jwt_required()
 def signup():
     obrigatory_keys = ["name", "email", "password", "contact"]
-    user_id = 1
-    # user_id = get_jwt_identity()["id"]
+    user_id = get_jwt_identity()["id"]
     data = request.get_json()
     session: Session = db.session
     missing_keys = [key for key in obrigatory_keys if key not in data.keys()]
@@ -67,7 +66,7 @@ def signup():
 
         data.pop("password")
 
-        return jsonify(data), HTTPStatus.CREATED
+        return jsonify(user), HTTPStatus.CREATED
     except UnauthorizedUser:
         return {
             "Error": "Unauthorized user. You need to be an admin to do it!"

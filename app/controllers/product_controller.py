@@ -10,10 +10,12 @@ from sqlalchemy.orm import Session
 
 from app.configs.database import db
 from app.exceptions import FilterError, UnauthorizedUser
-from app.exceptions.generic_exception import (MissingKeyError,
-                                              UnauthorizedUser, WrongKeyError)
-from app.models import (CategoryModel, EstablishmentModel, ProductCategory,
-                        ProductModel)
+from app.exceptions.generic_exception import (
+    MissingKeyError,
+    UnauthorizedUser,
+    WrongKeyError,
+)
+from app.models import CategoryModel, EstablishmentModel, ProductCategory, ProductModel
 from app.services import create_svc, get_all_svc, serialize_products_svc
 
 

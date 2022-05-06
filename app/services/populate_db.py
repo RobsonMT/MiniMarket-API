@@ -52,7 +52,7 @@ def populate_categories_and_payments():
             "url_img": "https://730370.smushcdn.com/1861587/wp-content/uploads/2021/09/balcao-de-padaria-1024x576.jpg?lossy=1&strip=1&webp=1",
         },
         {
-            "name": "açougue",
+            "name": "Açougue",
             "url_img": "https://blog.atau.com.br/wp-content/uploads/2018/08/Dicas-para-atrair-mais-clientes-para-o-seu-acougue-atau-1900x1069.jpg",
         },
         {
